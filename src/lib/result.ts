@@ -4,6 +4,12 @@ export type Err<E> = { ok: false; error: E };
 export type Result<T, E> = Ok<T> | Err<E>;
 
 export type TaskResult<T, E> = () => Promise<Result<T, E>>;
+type YieldableTaskResult<T, E> = Generator<TaskResult<T, E>, T, any>;
+
+type ErrOf<TR> = TR extends TaskResult<any, infer E> ? E : never;
+
+type YieldOf<G> = G extends Generator<infer Y, any, any> ? Y : never;
+type ReturnOf<G> = G extends Generator<any, infer R, any> ? R : never;
 
 const Result = {
   ok: <T>(value: T): Ok<T> => ({ ok: true, value }),
@@ -14,12 +20,46 @@ const Result = {
 };
 
 export const TaskResult = {
+  succeed:
+    <T>(value: T): TaskResult<T, never> =>
+    async () =>
+      Result.ok(value),
+
+  fail:
+    <E>(error: E): TaskResult<never, E> =>
+    async () =>
+      Result.err(error),
+
   fromPromise:
     <T, E>(_: { try: () => Promise<T>; catch: (reason: unknown) => E }): TaskResult<T, E> =>
     () =>
       _.try()
         .then((value) => Result.ok(value))
         .catch((reason) => Result.err(_.catch(reason))),
+
+  gen:
+    <G extends Generator<TaskResult<any, any>, any, any>>(
+      make: () => G
+    ): TaskResult<ReturnOf<G>, ErrOf<YieldOf<G>>> =>
+    async () => {
+      const it = make();
+      let step = it.next();
+
+      while (!step.done) {
+        const r = await step.value();
+        if (Result.isErr(r)) {
+          return r;
+        }
+        step = it.next(r.value);
+      }
+
+      return Result.ok(step.value);
+    },
+
+  adapter: <T, E>(tr: TaskResult<T, E>): YieldableTaskResult<T, E> =>
+    (function* () {
+      return yield tr;
+    })(),
 
   unwrap: async <T, E>(tr: TaskResult<T, E>): Promise<T> => {
     const r = await tr();
