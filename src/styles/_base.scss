@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: 'Aptos', 'Segoe UI', sans-serif;
+  background:
+    linear-gradient(90deg, rgba(87, 78, 61, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(87, 78, 61, 0.08) 1px, transparent 1px),
+    var(--bg);
+  background-size: 34px 34px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+code {
+  font-family: 'Cascadia Code', monospace;
+}
