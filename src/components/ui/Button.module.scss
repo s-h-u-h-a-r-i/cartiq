@@ -1,16 +1,34 @@
+@use '../../styles/motion' as motion;
+
 .button {
+  --button-pad-x: 1rem;
+  --spinner-size: 0.9em;
+  --spinner-gap: 0.4em;
+
   width: fit-content;
-  min-height: 40px;
+  min-height: 44px;
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #d9cde9;
+  border-radius: 999px;
+  border: 1px solid var(--line);
   background: var(--surface);
   color: var(--accent-2);
-  padding: 0.5rem 0.85rem;
+  padding: 0.55rem var(--button-pad-x);
   font-weight: 800;
+  letter-spacing: 0.01em;
   cursor: pointer;
+  outline: none;
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--accent-strong);
 }
 
 .button:disabled {
@@ -18,16 +36,48 @@
   cursor: not-allowed;
 }
 
+.button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.995);
+  border-color: var(--accent);
+}
+
+.button:focus-visible {
+  outline: none;
+  border-color: rgba(var(--accent-rgb), 0.65);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.26);
+}
+
 .primary {
   border-color: var(--accent-strong);
-  background: var(--accent);
-  color: #fcf9ff;
+  background: linear-gradient(180deg, #956648 0%, var(--accent) 100%);
+  color: #fff7ef;
 }
 
 .secondary {
   color: var(--accent);
-  border-color: #d4c5e8;
-  background: #f6effd;
+  border-color: #ceb39a;
+  background: var(--surface-soft);
+}
+
+.loading {
+  gap: var(--spinner-gap);
+  padding-left: calc(var(--button-pad-x) - ((var(--spinner-size) + var(--spinner-gap)) / 2));
+  padding-right: calc(var(--button-pad-x) - ((var(--spinner-size) + var(--spinner-gap)) / 2));
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.spinner {
+  flex: 0 0 auto;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  border: 2px solid rgba(var(--foam-rgb), 0.5);
+  border-top-color: currentColor;
+  border-radius: 999px;
+  @include motion.spin();
 }
 
 @media (max-width: 640px) {
