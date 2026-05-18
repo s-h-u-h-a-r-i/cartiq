@@ -30,7 +30,12 @@ export const TaskResult = {
     async () =>
       Result.err(error),
 
-  fromPromise:
+  sync:
+    <T>(fn: () => T): TaskResult<T, never> =>
+    async () =>
+      Result.ok(fn()),
+
+  tryAsync:
     <T, E>(_: { try: () => Promise<T>; catch: (reason: unknown) => E }): TaskResult<T, E> =>
     () =>
       _.try()
@@ -98,11 +103,15 @@ export const TaskResult = {
     },
 
   tap:
-    <T, E>(tr: TaskResult<T, E>, fn: (value: T) => void): TaskResult<T, E> =>
+    <T, E, E2>(
+      tr: TaskResult<T, E>,
+      fn: (value: T) => TaskResult<void, E2>
+    ): TaskResult<T, E | E2> =>
     async () => {
       const r = await tr();
       if (Result.isErr(r)) return r;
-      fn(r.value);
+      const r2 = await fn(r.value)();
+      if (Result.isErr(r2)) return r2;
       return r;
     },
 
@@ -121,11 +130,24 @@ export const TaskResult = {
     },
 
   tapErr:
-    <T, E>(tr: TaskResult<T, E>, fn: (error: E) => void): TaskResult<T, E> =>
+    <T, E, E2>(
+      tr: TaskResult<T, E>,
+      fn: (error: E) => TaskResult<void, E2>
+    ): TaskResult<T, E | E2> =>
     async () => {
       const r = await tr();
       if (Result.isOk(r)) return r;
-      fn(r.error);
+      const r2 = await fn(r.error)();
+      if (Result.isErr(r2)) return r2;
+      return r;
+    },
+
+  finally:
+    <T, E, E2>(tr: TaskResult<T, E>, fn: () => TaskResult<void, E2>) =>
+    async () => {
+      const r = await tr();
+      const r2 = await fn()();
+      if (Result.isErr(r2)) return r2;
       return r;
     },
 };
