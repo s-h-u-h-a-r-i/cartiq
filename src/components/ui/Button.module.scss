@@ -5,7 +5,7 @@
   align-items: center;
   gap: 0.5rem;
   border-radius: 8px;
-  border: 1px solid #b9aa93;
+  border: 1px solid #d9cde9;
   background: var(--surface);
   color: var(--accent-2);
   padding: 0.5rem 0.85rem;
@@ -19,15 +19,15 @@
 }
 
 .primary {
-  border-color: #2f655a;
+  border-color: var(--accent-strong);
   background: var(--accent);
-  color: #fffefa;
+  color: #fcf9ff;
 }
 
 .secondary {
   color: var(--accent);
-  border-color: #bcd0c8;
-  background: #edf5f1;
+  border-color: #d4c5e8;
+  background: #f6effd;
 }
 
 @media (max-width: 640px) {
