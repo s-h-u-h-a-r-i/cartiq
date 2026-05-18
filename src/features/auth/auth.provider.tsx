@@ -1,15 +1,19 @@
-import type { User } from 'firebase/auth';
+import { onAuthStateChanged, type User } from 'firebase/auth';
 import {
   createContext,
   createMemo,
   createSignal,
   Match,
+  onCleanup,
+  onMount,
   Switch,
   useContext,
   type Accessor,
   type ParentComponent,
 } from 'solid-js';
 
+import { BlockingLoadGate } from '@/features/loading';
+import { firebaseAuth } from '@/lib/firebase';
 import { TaskResult } from '@/lib/result';
 import { signOutGoogleSession } from './auth.service';
 
@@ -26,8 +30,17 @@ interface AuthStore {
 const AuthStoreContext = createContext<AuthStore>();
 
 export const AuthStoreProvider: ParentComponent = (props) => {
-  const [user, setUser] = createSignal<User | null>(null);
+  const [user, setUser] = createSignal<User | null | undefined>(undefined);
   const [accessToken, setAccessToken] = createSignal<string | null>(null);
+
+  onMount(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (nextUser) => {
+      setUser(nextUser);
+      if (!nextUser) setAccessToken(null);
+    });
+
+    onCleanup(unsubscribe);
+  });
 
   const signOutFromApp = async () => {
     await TaskResult.unwrap(signOutGoogleSession);
@@ -47,19 +60,21 @@ export const AuthStoreProvider: ParentComponent = (props) => {
   });
 
   return (
-    <Switch>
-      <Match when={user() === null}>
-        {/* Need to onboard user so create that in proper location */}
-        {null}
-      </Match>
-      <Match when={session()}>
-        {(session) => (
-          <AuthStoreContext.Provider value={{ session, signOutFromApp }}>
-            {props.children}
-          </AuthStoreContext.Provider>
-        )}
-      </Match>
-    </Switch>
+    <BlockingLoadGate isLoading={user() === undefined} loadingMessage='Checking session...'>
+      <Switch>
+        <Match when={user() === null}>
+          {/* Need to onboard user so create that in proper location */}
+          {null}
+        </Match>
+        <Match when={session()}>
+          {(session) => (
+            <AuthStoreContext.Provider value={{ session, signOutFromApp }}>
+              {props.children}
+            </AuthStoreContext.Provider>
+          )}
+        </Match>
+      </Switch>
+    </BlockingLoadGate>
   );
 };
 
