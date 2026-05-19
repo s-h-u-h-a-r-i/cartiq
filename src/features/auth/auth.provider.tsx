@@ -3,6 +3,7 @@ import {
   createContext,
   createMemo,
   createSignal,
+  lazy,
   Match,
   onCleanup,
   onMount,
@@ -15,7 +16,10 @@ import {
 import { BlockingLoadGate } from '@/features/loading';
 import { firebaseAuth } from '@/lib/firebase';
 import { TaskResult } from '@/lib/result';
-import { signOutGoogleSession } from './auth.service';
+import { type AuthError } from './auth.errors';
+import { signInWithGooglePopup, signOutGoogleSession } from './auth.service';
+
+const AuthSignInView = lazy(() => import('./components/AuthSignInView'));
 
 interface AuthSession {
   user: User;
@@ -24,7 +28,7 @@ interface AuthSession {
 
 interface AuthStore {
   session: Accessor<AuthSession>;
-  signOutFromApp(): Promise<void>;
+  signOutFromApp: TaskResult<void, AuthError>;
 }
 
 const AuthStoreContext = createContext<AuthStore>();
@@ -34,19 +38,41 @@ export const AuthStoreProvider: ParentComponent = (props) => {
   const [accessToken, setAccessToken] = createSignal<string | null>(null);
 
   onMount(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (nextUser) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (nextUser) => {
       setUser(nextUser);
-      if (!nextUser) setAccessToken(null);
+
+      if (!nextUser) {
+        setAccessToken(null);
+        return;
+      }
+
+      const token = await nextUser.getIdToken();
+      setAccessToken(token);
     });
 
     onCleanup(unsubscribe);
   });
 
-  const signOutFromApp = async () => {
-    await TaskResult.unwrap(signOutGoogleSession);
-    setUser(null);
-    setAccessToken(null);
-  };
+  const signInToApp = TaskResult.pipe(
+    signInWithGooglePopup,
+    TaskResult.tap((signedInSession) =>
+      TaskResult.sync(() => {
+        setUser(signedInSession.user);
+        setAccessToken(signedInSession.accessToken);
+      })
+    ),
+    TaskResult.asVoid
+  );
+
+  const signOutFromApp = TaskResult.pipe(
+    signOutGoogleSession,
+    TaskResult.finally(() =>
+      TaskResult.sync(() => {
+        setUser(null);
+        setAccessToken(null);
+      })
+    )
+  );
 
   const session = createMemo(() => {
     const u = user();
@@ -59,16 +85,19 @@ export const AuthStoreProvider: ParentComponent = (props) => {
     };
   });
 
+  const isAuthPending = () => user() === undefined;
+  const isSignedOut = () => user() === null;
+  const hasSession = () => Boolean(session());
+
   return (
-    <BlockingLoadGate isLoading={user() === undefined} loadingMessage='Checking session...'>
+    <BlockingLoadGate isLoading={isAuthPending()} loadingMessage='Checking session...'>
       <Switch>
-        <Match when={user() === null}>
-          {/* Need to onboard user so create that in proper location */}
-          {null}
+        <Match when={isSignedOut()}>
+          <AuthSignInView onSignIn={signInToApp} />
         </Match>
-        <Match when={session()}>
-          {(session) => (
-            <AuthStoreContext.Provider value={{ session, signOutFromApp }}>
+        <Match when={hasSession() && session()}>
+          {(activeSession) => (
+            <AuthStoreContext.Provider value={{ session: activeSession, signOutFromApp }}>
               {props.children}
             </AuthStoreContext.Provider>
           )}

@@ -1,21 +1,13 @@
 import { GoogleAuthProvider, type User, signInWithPopup, signOut } from 'firebase/auth';
 
-import { getErrorMessage } from '@/lib/errors';
 import { firebaseAuth } from '@/lib/firebase';
 import { TaskResult } from '@/lib/result';
+import { AuthError, toAuthError } from './auth.errors';
 
 export type SignedInSession = {
   accessToken: string;
   user: User;
 };
-
-export class AuthError extends Error {
-  code = 'auth/unknown' as const;
-
-  constructor(message: string) {
-    super(message);
-  }
-}
 
 export const signInWithGooglePopup = TaskResult.gen(function* () {
   const provider = new GoogleAuthProvider();
@@ -24,9 +16,9 @@ export const signInWithGooglePopup = TaskResult.gen(function* () {
   provider.setCustomParameters({ prompt: 'consent' });
 
   const result = yield* TaskResult.adapter(
-    TaskResult.fromPromise({
+    TaskResult.tryAsync({
       try: () => signInWithPopup(firebaseAuth, provider),
-      catch: (reason) => new AuthError(getErrorMessage(reason, 'Authentication failed.')),
+      catch: (reason) => toAuthError(reason, 'Authentication failed.'),
     })
   );
 
@@ -45,7 +37,7 @@ export const signInWithGooglePopup = TaskResult.gen(function* () {
   };
 });
 
-export const signOutGoogleSession = TaskResult.fromPromise({
+export const signOutGoogleSession = TaskResult.tryAsync({
   try: () => signOut(firebaseAuth),
-  catch: (reason) => new AuthError(getErrorMessage(reason, 'Authentication failed.')),
+  catch: (reason) => toAuthError(reason, 'Authentication failed.'),
 });
