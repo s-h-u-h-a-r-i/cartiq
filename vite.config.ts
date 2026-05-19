@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import solid from 'vite-plugin-solid'
-import path from 'node:path'
+import path from 'node:path';
+import { defineConfig } from 'vite';
+import solid from 'vite-plugin-solid';
 
 export default defineConfig({
   plugins: [solid()],
@@ -9,4 +9,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-})
+});
