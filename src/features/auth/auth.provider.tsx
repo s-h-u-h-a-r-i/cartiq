@@ -15,9 +15,8 @@ import {
 
 import { BlockingLoadGate } from '@/features/loading';
 import { firebaseAuth } from '@/lib/firebase';
-import { TaskResult } from '@/lib/result';
-import { type AuthError } from './auth.errors';
-import { signInWithGooglePopup, signOutGoogleSession } from './auth.service';
+import { runSignOut } from './auth.runner';
+import type { SignedInSession } from './auth.service';
 
 const AuthSignInView = lazy(() => import('./components/AuthSignInView'));
 
@@ -28,7 +27,7 @@ interface AuthSession {
 
 interface AuthStore {
   session: Accessor<AuthSession>;
-  signOutFromApp: TaskResult<void, AuthError>;
+  signOutFromApp: () => Promise<void>;
 }
 
 const AuthStoreContext = createContext<AuthStore>();
@@ -53,26 +52,10 @@ export const AuthStoreProvider: ParentComponent = (props) => {
     onCleanup(unsubscribe);
   });
 
-  const signInToApp = TaskResult.pipe(
-    signInWithGooglePopup,
-    TaskResult.tap((signedInSession) =>
-      TaskResult.sync(() => {
-        setUser(signedInSession.user);
-        setAccessToken(signedInSession.accessToken);
-      })
-    ),
-    TaskResult.asVoid
-  );
-
-  const signOutFromApp = TaskResult.pipe(
-    signOutGoogleSession,
-    TaskResult.finally(() =>
-      TaskResult.sync(() => {
-        setUser(null);
-        setAccessToken(null);
-      })
-    )
-  );
+  const applySignedInSession = (session: SignedInSession) => {
+    setUser(session.user);
+    setAccessToken(session.accessToken);
+  };
 
   const session = createMemo(() => {
     const u = user();
@@ -93,11 +76,12 @@ export const AuthStoreProvider: ParentComponent = (props) => {
     <BlockingLoadGate isLoading={isAuthPending()} loadingMessage='Checking session...'>
       <Switch>
         <Match when={isSignedOut()}>
-          <AuthSignInView onSignIn={signInToApp} />
+          <AuthSignInView onSignedIn={applySignedInSession} />
         </Match>
         <Match when={hasSession() && session()}>
           {(activeSession) => (
-            <AuthStoreContext.Provider value={{ session: activeSession, signOutFromApp }}>
+            <AuthStoreContext.Provider
+              value={{ session: activeSession, signOutFromApp: runSignOut }}>
               {props.children}
             </AuthStoreContext.Provider>
           )}

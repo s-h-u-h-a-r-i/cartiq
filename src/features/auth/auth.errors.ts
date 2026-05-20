@@ -1,16 +1,13 @@
 import { FirebaseError } from 'firebase/app';
 import { AuthErrorCodes } from 'firebase/auth';
+import { Data } from 'effect';
 
 import { getErrorMessage } from '@/lib/errors';
 
-export class AuthError extends Error {
-  code: string;
-
-  constructor(message: string, code: string = AuthErrorCodes.INTERNAL_ERROR) {
-    super(message);
-    this.code = code;
-  }
-}
+export class AuthError extends Data.TaggedError('AuthError')<{
+  readonly message: string;
+  readonly code: string;
+}> {}
 
 const KNOWN_SIGN_IN_ERROR_MESSAGES: Record<string, string> = {
   [AuthErrorCodes.POPUP_CLOSED_BY_USER]: 'Sign-in popup was closed before completion.',
@@ -23,10 +20,16 @@ const KNOWN_SIGN_IN_ERROR_MESSAGES: Record<string, string> = {
 
 export const toAuthError = (reason: unknown, fallbackMessage: string): AuthError => {
   if (reason instanceof FirebaseError) {
-    return new AuthError(getErrorMessage(reason, fallbackMessage), reason.code);
+    return new AuthError({
+      message: getErrorMessage(reason, fallbackMessage),
+      code: reason.code,
+    });
   }
 
-  return new AuthError(fallbackMessage);
+  return new AuthError({
+    message: fallbackMessage,
+    code: AuthErrorCodes.INTERNAL_ERROR,
+  });
 };
 
 export const getSignInErrorMessage = (error: AuthError): string =>

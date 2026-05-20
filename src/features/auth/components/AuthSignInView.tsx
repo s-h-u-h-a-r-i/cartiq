@@ -2,29 +2,19 @@ import { Show, createSignal, type Component } from 'solid-js';
 
 import { CoffeeIcon } from '@/components/icons';
 import { Button, Card } from '@/components/ui';
-import { TaskResult } from '@/lib/result';
-import { getSignInErrorMessage, type AuthError } from '../auth.errors';
+import { runSignIn } from '../auth.runner';
+import type { SignedInSession } from '../auth.service';
 import styles from './AuthSignInView.module.scss';
 
-type AuthSignInViewProps = {
-  onSignIn: TaskResult<void, AuthError>;
-};
-
-const AuthSignInView: Component<AuthSignInViewProps> = (props) => {
+const AuthSignInView: Component<{ onSignedIn: (session: SignedInSession) => void }> = (props) => {
   const [isSignInPending, setIsSignInPending] = createSignal(false);
   const [signInError, setSignInError] = createSignal<string | null>(null);
 
   const handleSignIn = () => {
     setSignInError(null);
     setIsSignInPending(true);
-    void TaskResult.unwrap(
-      TaskResult.pipe(
-        props.onSignIn,
-        TaskResult.tapErr((error) =>
-          TaskResult.sync(() => void setSignInError(getSignInErrorMessage(error)))
-        ),
-        TaskResult.finally(() => TaskResult.sync(() => void setIsSignInPending(false)))
-      )
+    void runSignIn(props.onSignedIn, (message) => setSignInError(message)).finally(() =>
+      setIsSignInPending(false)
     );
   };
 
