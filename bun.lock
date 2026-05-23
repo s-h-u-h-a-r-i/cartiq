@@ -5,6 +5,7 @@
     "": {
       "name": "personal_shopping",
       "dependencies": {
+        "@supabase/supabase-js": "^2.106.1",
         "effect": "^3.21.2",
         "lucide-solid": "^1.16.0",
         "sass": "^1.99.0",
@@ -137,6 +138,8 @@
 
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 
+    "@supabase/auth-js": ["@supabase/auth-js@2.106.1", "", { "dependencies": { "tslib": "2.8.1" } }, "sha512-7eyheXfAGwkB9bZewJPs+N3UYt6kra2JG6mIxNEgbkvcO15PLD1e75PTIUEYYl3zrifm3GrpShVl7QZxKrXO/w=="],
+
     "@supabase/cli-darwin-arm64": ["@supabase/cli-darwin-arm64@2.101.0", "", { "os": "darwin", "cpu": "arm64" }, "sha512-SoWYzu2CIE+rADWsZH6H0YZYF8nV2YMelZLbjAqzahb5RRgFOTMWGhKCUj6g4KlNvocUnU19JObUJ7oCx/9aHg=="],
 
     "@supabase/cli-darwin-x64": ["@supabase/cli-darwin-x64@2.101.0", "", { "os": "darwin", "cpu": "x64" }, "sha512-rPES03BF9KYkirq3X1Yll+T+eORueRvC858Yp2+2aQMvB4qxi6k+WI+ilCQ7NGzOJ3G0jl/ZG/KsSjZIa4AJ6g=="],
@@ -152,6 +155,18 @@
     "@supabase/cli-windows-arm64": ["@supabase/cli-windows-arm64@2.101.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-mSnFDhTIAe9cr1iifv+DTQzpY/0WphywED2YT3yMGeu94jjxrXrreQkywxEaeSXTnc4ys1umtnWOB1CaBlYKag=="],
 
     "@supabase/cli-windows-x64": ["@supabase/cli-windows-x64@2.101.0", "", { "os": "win32", "cpu": "x64" }, "sha512-xzZpybVWq62VF102abZr1EP3BbA2bYecwYm3G2dJk+6ua7nAIodu1fiGHAvBSR0BLGQmesNb6KCneawNL3XBsQ=="],
+
+    "@supabase/functions-js": ["@supabase/functions-js@2.106.1", "", { "dependencies": { "tslib": "2.8.1" } }, "sha512-XbOPnR2mW7jp/EcW447xmGwCa+/Wc00Hkw8t4tUIJjRsHQ4xAESsLKcyLRhRJjJoUnJVXUlC+w0wUxUCM7CG2A=="],
+
+    "@supabase/phoenix": ["@supabase/phoenix@0.4.2", "", {}, "sha512-YSAGnmDAfuleFCVt3CeurQZAhxRfXWeZIIkwp7NhYzQ1UwW6ePSnzsFAiUm/mbCkfoCf70QQHKW/K6RKh52a4A=="],
+
+    "@supabase/postgrest-js": ["@supabase/postgrest-js@2.106.1", "", { "dependencies": { "tslib": "2.8.1" } }, "sha512-Qbn6d2lqiqeaBX1Uko0e/hL90dtQGRN6CG2wMVQtJpRFstlVW45qmUTyTOsiB8dYUWu1fWYo4YzJuDbokGv3tQ=="],
+
+    "@supabase/realtime-js": ["@supabase/realtime-js@2.106.1", "", { "dependencies": { "@supabase/phoenix": "^0.4.2", "tslib": "2.8.1" } }, "sha512-eQCYri5E8KsjpDgC7g28cOOS2britjUWdNSJluFMainqrMRepzjOnaxqXc3RoAz7H0dxmBrfLUNF6NGP8C+YaA=="],
+
+    "@supabase/storage-js": ["@supabase/storage-js@2.106.1", "", { "dependencies": { "iceberg-js": "^0.8.1", "tslib": "2.8.1" } }, "sha512-HWcLIhqinhWKpOQ3WzglR2unjW0eh9J7yOu3IZrZNIEkraK4La/HDvTqndljGsNw0itPtyHhuKBxRoPG1VUARw=="],
+
+    "@supabase/supabase-js": ["@supabase/supabase-js@2.106.1", "", { "dependencies": { "@supabase/auth-js": "2.106.1", "@supabase/functions-js": "2.106.1", "@supabase/postgrest-js": "2.106.1", "@supabase/realtime-js": "2.106.1", "@supabase/storage-js": "2.106.1" } }, "sha512-gP4HurGkGu7Z3xoOCjtAI17BKKp7jpsmwY0Ssbsks9XQRzJ7ZhK7LxfLdBSYgUdgZCQgjRK+Mr7+cl4Gxrk0Rw=="],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.2", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg=="],
 
@@ -202,6 +217,8 @@
     "gensync": ["gensync@1.0.0-beta.2", "", {}, "sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg=="],
 
     "html-entities": ["html-entities@2.3.3", "", {}, "sha512-DV5Ln36z34NNTDgnz0EWGBLZENelNAtkiFA4kyNOG2tDI6Mz1uSWiq1wAKdyjnJwyDiDO7Fa2SO1CTxPXL8VxA=="],
+
+    "iceberg-js": ["iceberg-js@0.8.1", "", {}, "sha512-1dhVQZXhcHje7798IVM+xoo/1ZdVfzOMIc8/rgVSijRK38EDqOJoGula9N/8ZI5RD8QTxNQtK/Gozpr+qUqRRA=="],
 
     "immutable": ["immutable@5.1.5", "", {}, "sha512-t7xcm2siw+hlUM68I+UEOK+z84RzmN59as9DZ7P1l0994DKUWV7UXBMQZVxaoMSRQ+PBZbHCOoBt7a2wxOMt+A=="],
 
