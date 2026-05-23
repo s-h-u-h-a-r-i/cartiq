@@ -1,9 +1,11 @@
+import type { User } from '@supabase/supabase-js';
 import {
   createContext,
-  createMemo,
   createSignal,
   lazy,
   Match,
+  onCleanup,
+  onMount,
   Switch,
   useContext,
   type Accessor,
@@ -13,65 +15,49 @@ import {
 import { BlockingLoadGate } from '@/features/loading';
 import { run } from '@/lib/runtime';
 import { AuthService } from './auth.service';
-import type { AppUser, SignedInSession } from './auth.types';
 
 const AuthSignInView = lazy(() => import('./components/AuthSignInView'));
 
-interface AuthSession {
-  user: AppUser;
-  accessToken: string;
-}
-
 interface AuthStore {
-  session: Accessor<AuthSession>;
+  user: Accessor<User>;
   signOutFromApp: () => Promise<void>;
 }
 
 const AuthStoreContext = createContext<AuthStore>();
 
 export const AuthStoreProvider: ParentComponent = (props) => {
-  const [user, setUser] = createSignal<AppUser | null>(null);
-  const [accessToken, setAccessToken] = createSignal<string | null>(null);
+  const [user, setUser] = createSignal<User | null>(null);
+  const [isInitializing, setIsInitializing] = createSignal(true);
 
-  const applySignedInSession = (session: SignedInSession) => {
-    setUser(session.user);
-    setAccessToken(session.accessToken);
-  };
+  onMount(() => {
+    let unsubscribe: (() => void) | undefined;
 
-  const clearSession = () => {
-    setUser(null);
-    setAccessToken(null);
-  };
+    void run(
+      AuthService.listenToAuthChanges((nextSession) => {
+        setUser(nextSession?.user ?? null);
+        setIsInitializing(false);
+      })
+    ).then((unsub) => {
+      unsubscribe = unsub;
+    });
 
-  const session = createMemo(() => {
-    const u = user();
-    const at = accessToken();
-    if (!u || !at) return null;
-
-    return {
-      user: u,
-      accessToken: at,
-    };
+    onCleanup(() => void unsubscribe?.());
   });
 
-  const isSignedOut = () => user() === null;
-  const hasSession = () => Boolean(session());
+  const isSignedOut = () => !isInitializing() && user() === null;
 
   return (
-    <BlockingLoadGate isLoading={false} loadingMessage='Checking session...'>
+    <BlockingLoadGate isLoading={isInitializing()} loadingMessage='Checking session...'>
       <Switch>
         <Match when={isSignedOut()}>
-          <AuthSignInView onSignedIn={applySignedInSession} />
+          <AuthSignInView />
         </Match>
-        <Match when={hasSession() && session()}>
-          {(activeSession) => (
+        <Match when={user()}>
+          {(activeUser) => (
             <AuthStoreContext.Provider
               value={{
-                session: activeSession,
-                signOutFromApp: async () => {
-                  await run(AuthService.signOut);
-                  clearSession();
-                },
+                user: activeUser,
+                signOutFromApp: () => run(AuthService.signOut),
               }}>
               {props.children}
             </AuthStoreContext.Provider>

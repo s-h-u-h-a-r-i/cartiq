@@ -1,6 +1,7 @@
 import { Effect } from 'effect';
 
 import { Supabase, SupabaseLive } from '@/lib/supabase';
+import type { Session } from '@supabase/supabase-js';
 import { supabaseErrorToAuthError } from './auth.errors';
 
 export class AuthService extends Effect.Service<AuthService>()('AuthService', {
@@ -11,12 +12,7 @@ export class AuthService extends Effect.Service<AuthService>()('AuthService', {
 
     return {
       signInWithGoogle: Effect.promise(() =>
-        supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
-          },
-        })
+        supabase.auth.signInWithOAuth({ provider: 'google' })
       ).pipe(
         Effect.flatMap(({ error, data }) =>
           error ? Effect.fail(supabaseErrorToAuthError(error)) : Effect.succeed(data)
@@ -28,6 +24,14 @@ export class AuthService extends Effect.Service<AuthService>()('AuthService', {
           result.error ? Effect.fail(supabaseErrorToAuthError(result.error)) : Effect.void
         )
       ),
+
+      listenToAuthChanges: (onChange: (session: Session | null) => void) =>
+        Effect.sync(() => {
+          const {
+            data: { subscription },
+          } = supabase.auth.onAuthStateChange((_event, session) => void onChange(session));
+          return () => subscription.unsubscribe();
+        }),
     };
   }),
 }) {}
