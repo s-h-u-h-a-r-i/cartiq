@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { Effect } from 'effect';
+import type { Database } from './database.types';
 
 export class Supabase extends Effect.Service<Supabase>()('Supabase', {
   effect: Effect.sync(makeSupabaseClient),
@@ -15,5 +16,5 @@ function makeSupabaseClient() {
     throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
   }
 
-  return createClient(url, anonKey);
+  return createClient<Database>(url, anonKey);
 }
