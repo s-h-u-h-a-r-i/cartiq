@@ -1,12 +1,9 @@
-import { onAuthStateChanged, type User } from 'firebase/auth';
 import {
   createContext,
   createMemo,
   createSignal,
   lazy,
   Match,
-  onCleanup,
-  onMount,
   Switch,
   useContext,
   type Accessor,
@@ -14,14 +11,14 @@ import {
 } from 'solid-js';
 
 import { BlockingLoadGate } from '@/features/loading';
-import { firebaseAuth } from '@/lib/firebase';
-import { runSignOut } from './auth.runner';
-import type { SignedInSession } from './auth.service';
+import { run } from '@/lib/runtime';
+import { AuthService } from './auth.service';
+import type { AppUser, SignedInSession } from './auth.types';
 
 const AuthSignInView = lazy(() => import('./components/AuthSignInView'));
 
 interface AuthSession {
-  user: User;
+  user: AppUser;
   accessToken: string;
 }
 
@@ -33,28 +30,17 @@ interface AuthStore {
 const AuthStoreContext = createContext<AuthStore>();
 
 export const AuthStoreProvider: ParentComponent = (props) => {
-  const [user, setUser] = createSignal<User | null | undefined>(undefined);
+  const [user, setUser] = createSignal<AppUser | null>(null);
   const [accessToken, setAccessToken] = createSignal<string | null>(null);
-
-  onMount(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (nextUser) => {
-      setUser(nextUser);
-
-      if (!nextUser) {
-        setAccessToken(null);
-        return;
-      }
-
-      const token = await nextUser.getIdToken();
-      setAccessToken(token);
-    });
-
-    onCleanup(unsubscribe);
-  });
 
   const applySignedInSession = (session: SignedInSession) => {
     setUser(session.user);
     setAccessToken(session.accessToken);
+  };
+
+  const clearSession = () => {
+    setUser(null);
+    setAccessToken(null);
   };
 
   const session = createMemo(() => {
@@ -68,12 +54,11 @@ export const AuthStoreProvider: ParentComponent = (props) => {
     };
   });
 
-  const isAuthPending = () => user() === undefined;
   const isSignedOut = () => user() === null;
   const hasSession = () => Boolean(session());
 
   return (
-    <BlockingLoadGate isLoading={isAuthPending()} loadingMessage='Checking session...'>
+    <BlockingLoadGate isLoading={false} loadingMessage='Checking session...'>
       <Switch>
         <Match when={isSignedOut()}>
           <AuthSignInView onSignedIn={applySignedInSession} />
@@ -81,7 +66,13 @@ export const AuthStoreProvider: ParentComponent = (props) => {
         <Match when={hasSession() && session()}>
           {(activeSession) => (
             <AuthStoreContext.Provider
-              value={{ session: activeSession, signOutFromApp: runSignOut }}>
+              value={{
+                session: activeSession,
+                signOutFromApp: async () => {
+                  await run(AuthService.signOut);
+                  clearSession();
+                },
+              }}>
               {props.children}
             </AuthStoreContext.Provider>
           )}

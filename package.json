@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "effect": "^3.21.2",
-    "firebase": "^12.13.0",
     "lucide-solid": "^1.16.0",
     "sass": "^1.99.0",
     "solid-js": "^1.9.12"

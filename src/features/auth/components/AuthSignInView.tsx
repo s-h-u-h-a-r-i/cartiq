@@ -2,20 +2,33 @@ import { Show, createSignal, type Component } from 'solid-js';
 
 import { CoffeeIcon } from '@/components/icons';
 import { Button, Card } from '@/components/ui';
-import { runSignIn } from '../auth.runner';
-import type { SignedInSession } from '../auth.service';
+import { runEither } from '@/lib/runtime';
+import { Either } from 'effect';
+import { getSignInErrorMessage } from '../auth.errors';
+import { AuthService } from '../auth.service';
+import type { SignedInSession } from '../auth.types';
 import styles from './AuthSignInView.module.scss';
 
 const AuthSignInView: Component<{ onSignedIn: (session: SignedInSession) => void }> = (props) => {
   const [isSignInPending, setIsSignInPending] = createSignal(false);
   const [signInError, setSignInError] = createSignal<string | null>(null);
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     setSignInError(null);
     setIsSignInPending(true);
-    void runSignIn(props.onSignedIn, (message) => setSignInError(message)).finally(() =>
-      setIsSignInPending(false)
-    );
+
+    try {
+      const result = await runEither(AuthService.signInWithGoogle);
+
+      if (Either.isLeft(result)) {
+        setSignInError(getSignInErrorMessage(result.left));
+        return;
+      }
+
+      props.onSignedIn(result.right);
+    } finally {
+      setIsSignInPending(false);
+    }
   };
 
   return (
