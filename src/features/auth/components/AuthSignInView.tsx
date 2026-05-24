@@ -1,9 +1,9 @@
-import { Either } from 'effect';
+import { Effect, Either } from 'effect';
 import { Show, createSignal, type Component } from 'solid-js';
 
 import { CoffeeIcon } from '@/components/icons';
 import { Button, Card } from '@/components/ui';
-import { runEither } from '@/lib/runtime';
+import { run } from '@/lib/runtime';
 import { AuthService } from '../auth.service';
 import styles from './AuthSignInView.module.scss';
 
@@ -16,7 +16,7 @@ const AuthSignInView: Component = () => {
     setIsSignInPending(true);
 
     try {
-      const result = await runEither(AuthService.signInWithGoogle);
+      const result = await run(Effect.either(AuthService.signInWithGoogle));
 
       if (Either.isLeft(result)) {
         setSignInError(result.left.message);

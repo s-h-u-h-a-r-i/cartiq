@@ -1,10 +1,14 @@
 import type { Component } from 'solid-js';
+
 import { AuthStoreProvider } from './features/auth';
+import { ProfileStoreProvider } from './features/profile';
 
 const App: Component = () => {
   return (
     <AuthStoreProvider>
-      <h1>Logged in</h1>
+      <ProfileStoreProvider>
+        <h1>Logged in</h1>
+      </ProfileStoreProvider>
     </AuthStoreProvider>
   );
 };

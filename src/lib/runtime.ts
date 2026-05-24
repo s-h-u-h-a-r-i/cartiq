@@ -1,13 +1,10 @@
-import { Effect, Layer, ManagedRuntime } from 'effect';
+import { Layer, ManagedRuntime } from 'effect';
 
-import { type AuthService, AuthLive } from '@/features/auth/auth.service';
+import { AuthService } from '@/features/auth/auth.service';
+import { ProfileService } from '@/features/profile/profile.service';
 
-export const AppLayer = Layer.mergeAll(AuthLive);
+export const AppLayer = Layer.mergeAll(AuthService.Default, ProfileService.Default);
 
 export const AppRuntime = ManagedRuntime.make(AppLayer);
 
-export const run = <A, E>(effect: Effect.Effect<A, E, AuthService>) =>
-  AppRuntime.runPromise(effect);
-
-export const runEither = <A, E>(effect: Effect.Effect<A, E, AuthService>) =>
-  AppRuntime.runPromise(effect.pipe(Effect.either));
+export const run = AppRuntime.runPromise.bind(AppRuntime);

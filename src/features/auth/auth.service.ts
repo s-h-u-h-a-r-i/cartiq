@@ -1,12 +1,12 @@
 import { Effect } from 'effect';
 
-import { Supabase, SupabaseLive } from '@/lib/supabase';
+import { Supabase } from '@/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 import { supabaseErrorToAuthError } from './auth.errors';
 
 export class AuthService extends Effect.Service<AuthService>()('AuthService', {
   accessors: true,
-  dependencies: [SupabaseLive],
+  dependencies: [Supabase.Default],
   effect: Effect.gen(function* () {
     const supabase = yield* Supabase;
 
@@ -35,5 +35,3 @@ export class AuthService extends Effect.Service<AuthService>()('AuthService', {
     };
   }),
 }) {}
-
-export const AuthLive = AuthService.Default;

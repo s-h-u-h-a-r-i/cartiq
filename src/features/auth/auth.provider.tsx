@@ -53,10 +53,10 @@ export const AuthStoreProvider: ParentComponent = (props) => {
           <AuthSignInView />
         </Match>
         <Match when={user()}>
-          {(activeUser) => (
+          {(u) => (
             <AuthStoreContext.Provider
               value={{
-                user: activeUser,
+                user: u,
                 signOutFromApp: () => run(AuthService.signOut),
               }}>
               {props.children}
@@ -71,7 +71,7 @@ export const AuthStoreProvider: ParentComponent = (props) => {
 export function useAuthStore() {
   const ctx = useContext(AuthStoreContext);
   if (!ctx) {
-    throw new Error('useAuthStore must be used within AuthStoreProvider');
+    throw new Error(`${useAuthStore.name} must be used within a ${AuthStoreProvider.name}`);
   }
   return ctx;
 }
