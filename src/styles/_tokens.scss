@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Patrick Hand';
+  src: url('/fonts/PatrickHand-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #efe3d2;
   --surface: #f8efe2;
@@ -17,4 +25,25 @@
   --shadow-rgb: 77, 52, 34;
   --grid-line-rgb: 182, 151, 126;
   --foam-rgb: 255, 248, 238;
+
+  --sidebar-w: 15.5rem;
+  --panel-w: 17rem;
+
+  --font-family: 'Patrick Hand', cursive;
+
+  --type-headline-size: 1.875rem;
+  --type-headline-line: 2.375rem;
+  --type-headline-weight: 400;
+
+  --type-title-lg-size: 1.625rem;
+  --type-title-lg-line: 2.125rem;
+  --type-title-lg-weight: 400;
+
+  --type-title-md-size: 1.1875rem;
+  --type-title-md-line: 1.625rem;
+  --type-title-md-weight: 400;
+
+  --type-body-size: 1.0625rem;
+  --type-body-line: 1.5rem;
+  --type-body-weight: 400;
 }

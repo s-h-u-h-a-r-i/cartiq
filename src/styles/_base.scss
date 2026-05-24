@@ -6,7 +6,10 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--ink);
-  font-family: 'Aptos', 'Trebuchet MS', sans-serif;
+  font-family: var(--font-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: var(--type-body-weight);
   background:
     radial-gradient(circle at 12% 8%, rgba(var(--foam-rgb), 0.68), transparent 32%),
     radial-gradient(circle at 86% 12%, rgba(var(--foam-rgb), 0.44), transparent 28%),
@@ -22,14 +25,33 @@ body {
 
 h1,
 h2,
+h3,
 p {
   margin: 0;
 }
 
 h1,
+h2,
+h3 {
+  font-family: inherit;
+}
+
+h1 {
+  font-size: var(--type-headline-size);
+  line-height: var(--type-headline-line);
+  font-weight: var(--type-headline-weight);
+}
+
 h2 {
-  font-family: 'Georgia', 'Times New Roman', serif;
-  letter-spacing: 0.01em;
+  font-size: var(--type-title-lg-size);
+  line-height: var(--type-title-lg-line);
+  font-weight: var(--type-title-lg-weight);
+}
+
+h3 {
+  font-size: var(--type-title-md-size);
+  line-height: var(--type-title-md-line);
+  font-weight: var(--type-title-md-weight);
 }
 
 code {
