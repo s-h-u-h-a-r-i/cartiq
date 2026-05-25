@@ -1,4 +1,4 @@
-@use '../../styles/motion' as motion;
+@use '../../styles' as motion;
 
 .button {
   --button-pad-x: 1rem;
@@ -20,10 +20,7 @@
   letter-spacing: 0.01em;
   cursor: pointer;
   outline: none;
-  transition:
-    transform 0.16s ease,
-    border-color 0.16s ease,
-    box-shadow 0.16s ease;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .button:hover:not(:disabled) {
