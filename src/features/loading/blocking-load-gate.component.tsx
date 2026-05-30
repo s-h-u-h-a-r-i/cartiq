@@ -1,6 +1,6 @@
 import { Show, type Component, type JSX } from 'solid-js';
 
-import styles from './BlockingLoadGate.module.scss';
+import styles from './blocking-load-gate.module.scss';
 
 type BlockingLoadGateProps = {
   isLoading: boolean;

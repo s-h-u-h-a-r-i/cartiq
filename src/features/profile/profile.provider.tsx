@@ -10,8 +10,8 @@ import {
 import { run } from '@/lib/runtime';
 import { useAuth } from '../auth';
 import { BlockingLoadGate } from '../loading';
+import type { Profile } from './profile.schema';
 import { ProfileService } from './profile.service';
-import type { Profile } from './profile.types';
 
 interface ProfileStore {
   profile: Accessor<Profile>;
