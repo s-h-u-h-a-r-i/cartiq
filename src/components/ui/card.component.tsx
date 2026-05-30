@@ -1,6 +1,6 @@
 import type { Component, JSX } from 'solid-js';
 
-import styles from './Card.module.scss';
+import styles from './card.module.scss';
 
 type CardProps = {
   children: JSX.Element;

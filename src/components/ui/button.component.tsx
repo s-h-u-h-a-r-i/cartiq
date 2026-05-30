@@ -1,6 +1,6 @@
 import { splitProps, type Component, type JSX } from 'solid-js';
 
-import styles from './Button.module.scss';
+import styles from './button.module.scss';
 
 type ButtonVariantProps = {
   children: JSX.Element;
@@ -12,7 +12,13 @@ type ButtonVariantProps = {
 type ButtonProps = ButtonVariantProps & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button: Component<ButtonProps> = (props) => {
-  const [local, buttonProps] = splitProps(props, ['variant', 'icon', 'children', 'class', 'loading']);
+  const [local, buttonProps] = splitProps(props, [
+    'variant',
+    'icon',
+    'children',
+    'class',
+    'loading',
+  ]);
 
   const variant = () => local.variant ?? 'primary';
   const disabled = () => Boolean(buttonProps.disabled || local.loading);
@@ -26,7 +32,7 @@ export const Button: Component<ButtonProps> = (props) => {
       aria-busy={local.loading ? 'true' : undefined}>
       {!local.loading ? local.icon : null}
       <span class={styles.label}>{local.children}</span>
-      {local.loading ? <span class={styles.spinner} aria-hidden="true" /> : null}
+      {local.loading ? <span class={styles.spinner} aria-hidden='true' /> : null}
     </button>
   );
 };

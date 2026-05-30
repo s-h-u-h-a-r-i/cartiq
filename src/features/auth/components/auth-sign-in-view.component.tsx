@@ -4,8 +4,9 @@ import { Show, createSignal, type Component } from 'solid-js';
 import { CoffeeIcon } from '@/components/icons';
 import { Button, Card } from '@/components/ui';
 import { run } from '@/lib/runtime';
+
 import { AuthService } from '../auth.service';
-import styles from './AuthSignInView.module.scss';
+import styles from './auth-sign-in-view.module.scss';
 
 const AuthSignInView: Component = () => {
   const [isSignInPending, setIsSignInPending] = createSignal(false);

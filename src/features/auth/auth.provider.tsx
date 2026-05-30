@@ -16,7 +16,7 @@ import { BlockingLoadGate } from '@/features/loading';
 import { run } from '@/lib/runtime';
 import { AuthService } from './auth.service';
 
-const AuthSignInView = lazy(() => import('./components/AuthSignInView'));
+const AuthSignInView = lazy(() => import('./components/auth-sign-in-view.component'));
 
 interface AuthStore {
   user: Accessor<User>;

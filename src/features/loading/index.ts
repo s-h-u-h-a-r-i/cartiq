@@ -1,1 +1,1 @@
-export * from './BlockingLoadGate';
+export * from './blocking-load-gate.component';
