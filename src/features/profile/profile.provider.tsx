@@ -8,7 +8,7 @@ import {
 } from 'solid-js';
 
 import { run } from '@/lib/runtime';
-import { useAuthStore } from '../auth';
+import { useAuth } from '../auth';
 import { BlockingLoadGate } from '../loading';
 import { ProfileService } from './profile.service';
 import type { Profile } from './profile.types';
@@ -17,10 +17,10 @@ interface ProfileStore {
   profile: Accessor<Profile>;
 }
 
-const ProfileStoreContext = createContext<ProfileStore>();
+const ProfileContext = createContext<ProfileStore>();
 
-export const ProfileStoreProvider: ParentComponent = (props) => {
-  const authStore = useAuthStore();
+export const ProfileProvider: ParentComponent = (props) => {
+  const authStore = useAuth();
 
   const [profile] = createResource(
     () => authStore.user().id,
@@ -38,19 +38,17 @@ export const ProfileStoreProvider: ParentComponent = (props) => {
           </h1>
         }>
         {(p) => (
-          <ProfileStoreContext.Provider value={{ profile: p }}>
-            {props.children}
-          </ProfileStoreContext.Provider>
+          <ProfileContext.Provider value={{ profile: p }}>{props.children}</ProfileContext.Provider>
         )}
       </Show>
     </BlockingLoadGate>
   );
 };
 
-export function useProfileStore() {
-  const ctx = useContext(ProfileStoreContext);
+export function useProfile() {
+  const ctx = useContext(ProfileContext);
   if (!ctx) {
-    throw new Error(`${useProfileStore.name} must be used within a ${ProfileStoreProvider.name}`);
+    throw new Error(`${useProfile.name} must be used within a ${ProfileProvider.name}`);
   }
   return ctx;
 }

@@ -1,4 +1,3 @@
-import type { User } from '@supabase/supabase-js';
 import {
   createContext,
   createSignal,
@@ -12,6 +11,8 @@ import {
   type ParentComponent,
 } from 'solid-js';
 
+import type { User } from '@supabase/supabase-js';
+
 import { BlockingLoadGate } from '@/features/loading';
 import { run } from '@/lib/runtime';
 import { AuthService } from './auth.service';
@@ -23,9 +24,9 @@ interface AuthStore {
   signOutFromApp: () => Promise<void>;
 }
 
-const AuthStoreContext = createContext<AuthStore>();
+const AuthContext = createContext<AuthStore>();
 
-export const AuthStoreProvider: ParentComponent = (props) => {
+export const AuthProvider: ParentComponent = (props) => {
   const [user, setUser] = createSignal<User | null>(null);
   const [isInitializing, setIsInitializing] = createSignal(true);
 
@@ -54,13 +55,13 @@ export const AuthStoreProvider: ParentComponent = (props) => {
         </Match>
         <Match when={user()}>
           {(u) => (
-            <AuthStoreContext.Provider
+            <AuthContext.Provider
               value={{
                 user: u,
                 signOutFromApp: () => run(AuthService.signOut),
               }}>
               {props.children}
-            </AuthStoreContext.Provider>
+            </AuthContext.Provider>
           )}
         </Match>
       </Switch>
@@ -68,10 +69,10 @@ export const AuthStoreProvider: ParentComponent = (props) => {
   );
 };
 
-export function useAuthStore() {
-  const ctx = useContext(AuthStoreContext);
+export function useAuth() {
+  const ctx = useContext(AuthContext);
   if (!ctx) {
-    throw new Error(`${useAuthStore.name} must be used within a ${AuthStoreProvider.name}`);
+    throw new Error(`${useAuth.name} must be used within a ${AuthProvider.name}`);
   }
   return ctx;
 }
