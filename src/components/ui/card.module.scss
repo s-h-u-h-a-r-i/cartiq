@@ -1,10 +1,10 @@
 .card {
-  border: 1px solid var(--line);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
-  background: rgba(var(--surface-rgb), 0.92);
+  background: var(--color-overlay-surface);
   box-shadow:
-    0 16px 30px rgba(var(--shadow-rgb), 0.16),
-    inset 0 1px 0 rgba(var(--foam-rgb), 0.5);
+    0 16px 30px var(--color-shadow),
+    inset 0 1px 0 var(--color-overlay-highlight);
   padding: 1.1rem;
 }
 
@@ -12,7 +12,7 @@
   margin: 0 0 0.65rem;
   font-size: 1.08rem;
   letter-spacing: 0.02em;
-  color: var(--accent-2);
+  color: var(--color-primary-soft);
 }
 
 .content {

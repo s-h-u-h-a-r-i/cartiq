@@ -7,24 +7,30 @@
 }
 
 :root {
-  --bg: #efe3d2;
-  --surface: #f8efe2;
-  --surface-rgb: 248, 239, 226;
-  --surface-soft: #fdf7ee;
-  --ink: #38261a;
-  --ink-rgb: 56, 38, 26;
-  --muted: #7f6957;
-  --line: #d6c1ad;
-  --accent: #8a5a3c;
-  --accent-rgb: 138, 90, 60;
-  --accent-strong: #6f452e;
-  --accent-strong-rgb: 111, 69, 46;
-  --accent-2: #a6714f;
-  --warn: #b35b36;
-  --warn-rgb: 179, 91, 54;
-  --shadow-rgb: 77, 52, 34;
-  --grid-line-rgb: 182, 151, 126;
-  --foam-rgb: 255, 248, 238;
+  --color-bg: #efe3d2;
+  --color-surface: #f8efe2;
+  --color-surface-soft: #fff7ef;
+
+  --color-text: #38261a;
+  --color-text-muted: #7f6957;
+
+  --color-border: #d6c1ad;
+
+  --color-primary: #8a5a3c;
+  --color-primary-strong: #6f452e;
+  --color-primary-soft: #a6714f;
+
+  --color-danger: #b35b36;
+
+  --color-shadow: #4d342229;
+  --color-overlay-surface: #f8efe2eb;
+  --color-overlay-surface-strong: #f8efe2f5;
+  --color-overlay-primary: #8a5a3c1f;
+  --color-overlay-primary-strong: #8a5a3c42;
+  --color-overlay-highlight: #fff8ee80;
+  --color-bg-highlight: #fff8eead;
+  --color-bg-highlight-soft: #fff8ee70;
+  --color-bg-grid: #b6977e1f;
 
   --sidebar-w: 15.5rem;
   --panel-w: 17rem;
