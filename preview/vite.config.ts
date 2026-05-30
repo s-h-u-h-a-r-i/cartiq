@@ -3,6 +3,7 @@ import solid from 'vite-plugin-solid';
 
 export default defineConfig({
   root: __dirname,
+  publicDir: '../public',
   plugins: [solid()],
   build: {
     outDir: '../dist-preview',
