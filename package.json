@@ -25,6 +25,7 @@
     "effect": "^3.21.2",
     "lucide-solid": "^1.16.0",
     "sass": "^1.99.0",
+    "solid-devtools": "^0.34.5",
     "solid-js": "^1.9.12"
   },
   "devDependencies": {
