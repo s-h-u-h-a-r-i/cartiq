@@ -2,9 +2,13 @@ import { splitProps, type Component, type JSX } from 'solid-js';
 
 import styles from './input.module.scss';
 
-type InputProps = JSX.InputHTMLAttributes<HTMLInputElement>;
+type TextInputType = 'text' | 'email' | 'password' | 'search' | 'tel' | 'url';
 
-export const Input: Component<InputProps> = (props) => {
+type TextInputProps = Omit<JSX.InputHTMLAttributes<HTMLInputElement>, 'type'> & {
+  type?: TextInputType;
+};
+
+export const TextInput: Component<TextInputProps> = (props) => {
   const [local, inputProps] = splitProps(props, ['class']);
 
   return <input {...inputProps} class={`${styles.input} ${local.class ?? ''}`.trim()} />;
