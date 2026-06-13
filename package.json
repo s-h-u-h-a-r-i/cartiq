@@ -6,6 +6,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
+    "dev:mock": "vite --mode mock --port 3001",
     "build": "vite build",
     "serve": "vite preview",
     "db:start": "supabase start",
