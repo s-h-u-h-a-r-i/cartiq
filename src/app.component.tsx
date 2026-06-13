@@ -1,7 +1,27 @@
-import type { Component } from 'solid-js';
+import { type Component } from 'solid-js';
+
+import { AuthProvider, useAuth } from './auth';
+
+const Home: Component = () => {
+  const auth = useAuth();
+
+  return (
+    <main>
+      <h1>CartIQ</h1>
+      <p>{auth.user().email}</p>
+      <button type='button' onClick={() => void auth.signOut()}>
+        Sign out
+      </button>
+    </main>
+  );
+};
 
 const App: Component = () => {
-  return <div></div>;
+  return (
+    <AuthProvider>
+      <Home />
+    </AuthProvider>
+  );
 };
 
 export default App;
