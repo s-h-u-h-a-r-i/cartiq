@@ -22,3 +22,12 @@
 - Do not refactor unrelated files while implementing a feature.
 - Preserve existing naming and structure conventions.
 - Validate meaningful code changes with the project’s available typecheck or build command.
+
+## Conventions
+
+- Follow established project conventions when they exist.
+- When the project does not yet establish a convention, follow the documented conventions of the framework, library, or tool being used.
+- Do not copy incomplete, temporary, or experimental project code as a convention.
+- Do not introduce shortcuts that conflict with documented library usage.
+- If a user request conflicts with established or documented conventions, call out the conflict before implementing.
+- Prefer stable patterns that will not require immediate refactoring over quick temporary implementations.
