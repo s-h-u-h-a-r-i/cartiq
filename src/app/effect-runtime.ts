@@ -1,6 +1,6 @@
 import { ManagedRuntime } from 'effect';
 
-import { AppLayer } from './app-layer';
+import { AppLayer } from '@/environment';
 
 export const AppRuntime = ManagedRuntime.make(AppLayer);
 
