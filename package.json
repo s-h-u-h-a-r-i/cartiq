@@ -7,7 +7,16 @@
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:restart": "supabase stop && supabase start",
+    "db:reset": "supabase db reset",
+    "db: migration": "supabase migration new",
+    "db:types:local": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
+    "db:types:remote": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts",
+    "db:reset:types:local": "supabase db reset && bun run db:types:local",
+    "db:push": "supabase db push"
   },
   "license": "MIT",
   "devDependencies": {
@@ -17,6 +26,8 @@
     "vite-plugin-solid": "^2.11.8"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
+    "effect": "^3.21.3",
     "solid-js": "^1.9.5"
   }
 }
