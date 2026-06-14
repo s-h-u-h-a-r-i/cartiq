@@ -62,8 +62,10 @@ src/
 ## Layout Rules
 
 - Keep files flat inside a module until there are enough files to justify nesting.
-- If a utility is only used by one module, keep it in that module.
-- Move utilities to `shared/` only when they are reused across multiple modules.
+- Place generic, domain-agnostic utilities in `src/shared/` based on responsibility, not current usage count.
+- If a function is broadly named and reusable by nature, such as class-name joining, date formatting, number formatting, math helpers, collection helpers, or TypeScript utility types, put it in `src/shared/` even when it currently has only one caller.
+- Keep logic local only when it is clearly owned by that feature, component, or domain workflow.
+- Do not hide reusable primitives inside the first component or feature that happens to need them.
 - Avoid generic dumping-ground files such as `utils.ts`.
 - Use module-local names inside a module, for example `auth/service.ts` instead of `auth/auth-service.ts`.
 

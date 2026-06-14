@@ -1,5 +1,7 @@
 import { Component, createSignal, Show } from 'solid-js';
 
+import { Button } from '@/ui';
+
 export type SignInResult = { readonly ok: true } | { readonly ok: false; readonly message: string };
 
 export const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (props) => {
@@ -17,9 +19,9 @@ export const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult>
   return (
     <main>
       <h1>CartIQ</h1>
-      <button type='button' disabled={isPending()} onClick={() => void signIn()}>
+      <Button loading={isPending()} onClick={() => void signIn()}>
         {isPending() ? 'Signing in...' : 'Continue with Google'}
-      </button>
+      </Button>
       <Show when={error()}>{(errMsg) => <p>{errMsg()}</p>}</Show>
     </main>
   );
