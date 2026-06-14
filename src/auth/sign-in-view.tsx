@@ -13,7 +13,7 @@ const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (
   const [error, setError] = createSignal<string | null>(null);
 
   onMount(() => {
-    backdrop.setRadialPosition({ x: '50%', y: '12%' });
+    backdrop.setRadialPosition({ x: '25%', y: '30%' });
   });
 
   const signIn = async () => {
