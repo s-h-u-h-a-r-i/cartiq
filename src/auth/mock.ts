@@ -15,7 +15,7 @@ const mockSession = {
   user: mockUser,
 } satisfies AuthSession;
 
-const sessionStore = createSubscriptionStore<AuthSession | null>(null);
+const sessionStore = createSubscriptionStore<AuthSession | null>(mockSession);
 
 export const AuthMock = Layer.succeed(
   Auth,

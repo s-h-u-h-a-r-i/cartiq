@@ -1,6 +1,7 @@
 import { type Component } from 'solid-js';
 
 import { AuthProvider, useAuth } from './auth';
+import { AppBackdropProvider } from './layout';
 
 const Home: Component = () => {
   const auth = useAuth();
@@ -18,9 +19,11 @@ const Home: Component = () => {
 
 const App: Component = () => {
   return (
-    <AuthProvider>
-      <Home />
-    </AuthProvider>
+    <AppBackdropProvider>
+      <AuthProvider>
+        <Home />
+      </AuthProvider>
+    </AppBackdropProvider>
   );
 };
 

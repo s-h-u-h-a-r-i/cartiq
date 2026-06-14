@@ -1,5 +1,6 @@
-import { Component, createSignal, Show } from 'solid-js';
+import { Component, createSignal, onMount, Show } from 'solid-js';
 
+import { useAppBackdrop } from '@/layout';
 import { Button, Logo } from '@/ui';
 
 import styles from './sign-in-view.module.scss';
@@ -7,8 +8,13 @@ import styles from './sign-in-view.module.scss';
 export type SignInResult = { readonly ok: true } | { readonly ok: false; readonly message: string };
 
 const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (props) => {
+  const backdrop = useAppBackdrop();
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
+
+  onMount(() => {
+    backdrop.setRadialPosition({ x: '50%', y: '12%' });
+  });
 
   const signIn = async () => {
     setIsPending(true);

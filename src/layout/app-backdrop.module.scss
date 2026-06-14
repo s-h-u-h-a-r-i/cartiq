@@ -1,0 +1,25 @@
+@property --app-backdrop-radial-x {
+  syntax: '<length-percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+
+@property --app-backdrop-radial-y {
+  syntax: '<length-percentage>';
+  inherits: true;
+  initial-value: 12%;
+}
+
+.backdrop {
+  min-height: 100svh;
+  background:
+    radial-gradient(
+      circle at var(--app-backdrop-radial-x) var(--app-backdrop-radial-y),
+      color-mix(in srgb, var(--color-accent) 14%, transparent),
+      transparent 34rem
+    ),
+    var(--color-page);
+  transition:
+    --app-backdrop-radial-x 700ms ease,
+    --app-backdrop-radial-y 700ms ease;
+}

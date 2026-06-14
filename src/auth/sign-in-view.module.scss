@@ -3,9 +3,6 @@
   display: grid;
   place-items: center;
   padding: var(--space-4);
-  background:
-    radial-gradient(circle at 50% 12%, color-mix(in srgb, var(--color-accent) 14%, transparent), transparent 34rem),
-    var(--color-page);
 }
 
 .panel {
