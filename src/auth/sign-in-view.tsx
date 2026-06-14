@@ -4,7 +4,7 @@ import { Button } from '@/ui';
 
 export type SignInResult = { readonly ok: true } | { readonly ok: false; readonly message: string };
 
-export const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (props) => {
+const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (props) => {
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
 
@@ -26,3 +26,5 @@ export const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult>
     </main>
   );
 };
+
+export default SignInView;

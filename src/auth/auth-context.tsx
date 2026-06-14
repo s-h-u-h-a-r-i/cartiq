@@ -3,6 +3,7 @@ import {
   Accessor,
   createContext,
   createSignal,
+  lazy,
   Match,
   onCleanup,
   onMount,
@@ -13,7 +14,9 @@ import {
 
 import { run } from '@/app';
 import { Auth, type AuthSession, type AuthUser } from './auth';
-import { type SignInResult, SignInView } from './components';
+import { type SignInResult } from './sign-in-view';
+
+const SignInView = lazy(() => import('./sign-in-view'));
 
 interface AuthContext {
   readonly session: Accessor<AuthSession>;
