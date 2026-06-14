@@ -15,8 +15,9 @@
   background:
     radial-gradient(
       circle at var(--app-backdrop-radial-x) var(--app-backdrop-radial-y),
-      color-mix(in srgb, var(--color-backdrop-radial) 24%, transparent),
-      transparent 34rem
+      color-mix(in srgb, var(--color-backdrop-radial) 26%, transparent) 0,
+      color-mix(in srgb, var(--color-backdrop-radial) 14%, transparent) 28rem,
+      transparent 56rem
     ),
     var(--color-page);
   transition:
