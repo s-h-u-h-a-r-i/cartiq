@@ -1,3 +1,3 @@
 export * from './auth';
-export * from './auth-context';
-export * from './sign-in-view';
+export * from './auth.context';
+export * from './sign-in-view.component';

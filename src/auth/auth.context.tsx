@@ -14,9 +14,9 @@ import {
 
 import { run } from '@/app';
 import { Auth, type AuthSession, type AuthUser } from './auth';
-import { type SignInResult } from './sign-in-view';
+import { type SignInResult } from './sign-in-view.component';
 
-const SignInView = lazy(() => import('./sign-in-view'));
+const SignInView = lazy(() => import('./sign-in-view.component'));
 
 interface AuthContext {
   readonly session: Accessor<AuthSession>;

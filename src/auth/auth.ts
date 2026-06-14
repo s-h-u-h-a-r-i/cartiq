@@ -2,7 +2,7 @@ import type { Session as SupabaseSession, User as SupabaseUser } from '@supabase
 import { Effect } from 'effect';
 
 import { Supabase } from '@/supabase';
-import { supabaseErrorToAuthError, unknownToAuthError } from './auth-error';
+import { supabaseErrorToAuthError, unknownToAuthError } from './auth.error';
 
 export interface AuthUser {
   readonly id: string;

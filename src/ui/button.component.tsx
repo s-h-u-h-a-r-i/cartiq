@@ -8,6 +8,19 @@ import styles from './button.module.scss';
 type ButtonAppearance = 'solid' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
+const appearanceClass = {
+  solid: styles.solid,
+  outline: styles.outline,
+  ghost: styles.ghost,
+  danger: styles.danger,
+} satisfies Record<ButtonAppearance, string>;
+
+const sizeClass = {
+  sm: styles.sm,
+  md: styles.md,
+  lg: styles.lg,
+} satisfies Record<ButtonSize, string>;
+
 interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   readonly appearance?: ButtonAppearance;
   readonly size?: ButtonSize;
@@ -38,11 +51,11 @@ export function Button(props: ButtonProps) {
   return (
     <button
       {...buttonProps}
-      class={joinClasses(styles.button, local.class)}
-      data-full-width={local.fullWidth ? '' : undefined}
-      data-loading={local.loading ? '' : undefined}
-      data-size={size()}
-      data-appearance={appearance()}
+      class={joinClasses(styles.button, appearanceClass[appearance()], sizeClass[size()], local.class)}
+      classList={{
+        [styles.fullWidth]: local.fullWidth,
+        [styles.loading]: local.loading,
+      }}
       disabled={isDisabled()}
       type={local.type ?? 'button'}
       aria-busy={local.loading ? 'true' : undefined}>

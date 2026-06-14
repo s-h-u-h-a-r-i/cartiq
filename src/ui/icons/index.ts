@@ -1,1 +1,1 @@
-export * from './google-icon';
+export * from './google-icon.component';
