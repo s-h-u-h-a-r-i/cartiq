@@ -19,8 +19,8 @@ const sessionStore = createSubscriptionStore<AuthSession | null>(mockSession);
 export const AuthMock = Layer.succeed(
   Auth,
   new Auth({
-    getSession: Effect.sync(sessionStore.get),
-    signInWithGoogle: Effect.sync(() => sessionStore.set(mockSession)),
+    getSession: Effect.sync(sessionStore.get).pipe(Effect.delay(1000)),
+    signInWithGoogle: Effect.sync(() => sessionStore.set(mockSession)).pipe(Effect.delay(1000)),
     signOut: Effect.sync(() => sessionStore.set(null)),
     observeSession: (onChange) => Effect.sync(() => sessionStore.subscribe(onChange)),
   })

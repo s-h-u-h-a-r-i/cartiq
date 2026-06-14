@@ -1,6 +1,6 @@
 import { Component, createSignal, Show } from 'solid-js';
 
-import { Button, GoogleIcon, Logo } from '@/ui';
+import { Button, Logo } from '@/ui';
 
 import styles from './sign-in-view.module.scss';
 
@@ -34,8 +34,7 @@ const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (
           size='lg'
           fullWidth
           loading={isPending()}
-          onClick={() => void signIn()}
-          leadingIcon={<GoogleIcon />}>
+          onClick={() => void signIn()}>
           {isPending() ? 'Signing in...' : 'Continue with Google'}
         </Button>
 
