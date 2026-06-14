@@ -1,6 +1,8 @@
 import { Component, createSignal, Show } from 'solid-js';
 
-import { Button } from '@/ui';
+import { Button, GoogleIcon, Logo } from '@/ui';
+
+import styles from './sign-in-view.module.scss';
 
 export type SignInResult = { readonly ok: true } | { readonly ok: false; readonly message: string };
 
@@ -17,12 +19,28 @@ const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (
   };
 
   return (
-    <main>
-      <h1>CartIQ</h1>
-      <Button loading={isPending()} onClick={() => void signIn()}>
-        {isPending() ? 'Signing in...' : 'Continue with Google'}
-      </Button>
-      <Show when={error()}>{(errMsg) => <p>{errMsg()}</p>}</Show>
+    <main class={styles.page}>
+      <section class={styles.panel} aria-labelledby='sign-in-title'>
+        <div class={styles.heading}>
+          <Logo labelId='sign-in-title' />
+          <h1 id='sign-in-title' class={styles.title}>
+            CartIQ
+          </h1>
+          <p>Smarter shopping starts here.</p>
+        </div>
+
+        <Button
+          variant='secondary'
+          size='lg'
+          fullWidth
+          loading={isPending()}
+          onClick={() => void signIn()}
+          leadingIcon={<GoogleIcon />}>
+          {isPending() ? 'Signing in...' : 'Continue with Google'}
+        </Button>
+
+        <Show when={error()}>{(errMsg) => <p class={styles.error}>{errMsg()}</p>}</Show>
+      </section>
     </main>
   );
 };

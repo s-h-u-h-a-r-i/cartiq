@@ -1,0 +1,29 @@
+.logo {
+  display: inline-flex;
+  width: max-content;
+  align-items: baseline;
+  gap: var(--space-1);
+  color: var(--color-text);
+  font-size: var(--font-size-6);
+  font-weight: 700;
+  line-height: var(--line-height-tight);
+  letter-spacing: 0;
+}
+
+.cart {
+  color: inherit;
+}
+
+.iq {
+  display: inline-grid;
+  min-width: 1.9em;
+  min-height: 1.35em;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-accent-strong) 74%, black);
+  border-radius: var(--radius-2);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-size: 0.58em;
+  line-height: 1;
+  transform: rotate(-2deg) translateY(-0.08em);
+}

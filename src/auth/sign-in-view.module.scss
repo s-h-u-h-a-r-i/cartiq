@@ -1,0 +1,58 @@
+.page {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background:
+    radial-gradient(circle at 50% 12%, color-mix(in srgb, var(--color-accent) 14%, transparent), transparent 34rem),
+    var(--color-page);
+}
+
+.panel {
+  width: min(100%, 26rem);
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-3);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  box-shadow: 0 1rem 2.5rem rgb(44 31 23 / 0.12);
+}
+
+.heading {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.heading p {
+  max-width: 18rem;
+}
+
+.error {
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 42%, var(--color-border));
+  border-radius: var(--radius-2);
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  font-size: var(--font-size-2);
+}
+
+@media (min-width: 48rem) {
+  .page {
+    padding: var(--space-8);
+  }
+
+  .panel {
+    padding: var(--space-8);
+  }
+}
