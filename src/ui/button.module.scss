@@ -63,45 +63,45 @@
   font-size: var(--font-size-4);
 }
 
-.button[data-variant='primary'] {
+.button[data-appearance='solid'] {
   border-color: color-mix(in srgb, var(--color-accent-strong) 74%, black);
   background: var(--color-accent);
   color: var(--color-surface);
   box-shadow: 0 0.65rem 1.25rem rgb(111 62 31 / 0.22);
 }
 
-.button[data-variant='primary']:not(:disabled):hover {
+.button[data-appearance='solid']:not(:disabled):hover {
   background: var(--color-accent-strong);
 }
 
-.button[data-variant='secondary'] {
+.button[data-appearance='outline'] {
   border-color: var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: 0 0.25rem 0.75rem rgb(44 31 23 / 0.08);
 }
 
-.button[data-variant='secondary']:not(:disabled):hover {
+.button[data-appearance='outline']:not(:disabled):hover {
   background: var(--color-surface-muted);
 }
 
-.button[data-variant='ghost'] {
+.button[data-appearance='ghost'] {
   border-color: transparent;
   background: transparent;
   color: var(--color-accent-strong);
 }
 
-.button[data-variant='ghost']:not(:disabled):hover {
+.button[data-appearance='ghost']:not(:disabled):hover {
   background: color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
 
-.button[data-variant='danger'] {
+.button[data-appearance='danger'] {
   border-color: color-mix(in srgb, var(--color-danger) 80%, black);
   background: var(--color-danger);
   color: var(--color-surface);
 }
 
-.button[data-variant='danger']:not(:disabled):hover {
+.button[data-appearance='danger']:not(:disabled):hover {
   background: color-mix(in srgb, var(--color-danger) 86%, black);
 }
 

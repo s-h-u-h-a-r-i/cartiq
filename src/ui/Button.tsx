@@ -5,11 +5,11 @@ import { joinClasses } from '@/shared/classes';
 
 import styles from './button.module.scss';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonAppearance = 'solid' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
-  readonly variant?: ButtonVariant;
+  readonly appearance?: ButtonAppearance;
   readonly size?: ButtonSize;
   readonly fullWidth?: boolean;
   readonly loading?: boolean;
@@ -19,6 +19,7 @@ interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export function Button(props: ButtonProps) {
   const [local, buttonProps] = splitProps(props, [
+    'appearance',
     'children',
     'class',
     'disabled',
@@ -28,10 +29,9 @@ export function Button(props: ButtonProps) {
     'size',
     'trailingIcon',
     'type',
-    'variant',
   ]);
 
-  const variant = () => local.variant ?? 'primary';
+  const appearance = () => local.appearance ?? 'solid';
   const size = () => local.size ?? 'md';
   const isDisabled = () => local.disabled || local.loading;
 
@@ -42,7 +42,7 @@ export function Button(props: ButtonProps) {
       data-full-width={local.fullWidth ? '' : undefined}
       data-loading={local.loading ? '' : undefined}
       data-size={size()}
-      data-variant={variant()}
+      data-appearance={appearance()}
       disabled={isDisabled()}
       type={local.type ?? 'button'}
       aria-busy={local.loading ? 'true' : undefined}>

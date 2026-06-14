@@ -30,7 +30,7 @@ const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (
         </div>
 
         <Button
-          variant='secondary'
+          appearance='outline'
           size='lg'
           fullWidth
           loading={isPending()}
