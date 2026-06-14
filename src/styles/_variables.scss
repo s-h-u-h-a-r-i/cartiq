@@ -1,16 +1,17 @@
 :root {
   color-scheme: light dark;
 
-  --color-page: #f7efe3;
-  --color-surface: #fffaf2;
-  --color-surface-muted: #efe0cc;
-  --color-border: #dcc5aa;
-  --color-text: #2c1f17;
-  --color-text-muted: #725f50;
-  --color-accent: #9a5a2e;
-  --color-accent-strong: #6f3e1f;
+  --color-page: #f5eadc;
+  --color-surface: #fff8ee;
+  --color-surface-muted: #eadac8;
+  --color-border: #d2bea8;
+  --color-text: #2f241d;
+  --color-text-muted: #756456;
+  --color-accent: #9f6f4e;
+  --color-accent-strong: #704a32;
+  --color-backdrop-radial: #d07b4f;
   --color-danger: #b42318;
-  --color-focus: #c47a3c;
+  --color-focus: #b9825d;
 
   --font-family-base: 'Comic Relief', 'Comic Sans MS', ui-rounded, system-ui, sans-serif;
   --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
@@ -49,6 +50,7 @@
     --color-text-muted: #b9a696;
     --color-accent: #d99b63;
     --color-accent-strong: #f0b77c;
+    --color-backdrop-radial: #d99b63;
     --color-danger: #ff8a80;
     --color-focus: #f0b77c;
   }
