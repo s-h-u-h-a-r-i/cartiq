@@ -6,8 +6,8 @@ import solidPlugin from 'vite-plugin-solid';
 export default defineConfig(({ mode }) => {
   const environmentPath =
     mode === 'mock'
-      ? '/src/environment/mock.environment.ts'
-      : '/src/environment/real.environment.ts';
+      ? '/src/environment/mock.ts'
+      : '/src/environment/real.ts';
 
   return {
     plugins: [devtools(), solidPlugin()],

@@ -13,10 +13,11 @@ import {
 } from 'solid-js';
 
 import { run } from '@/app';
-import { Auth, type AuthSession, type AuthUser } from './auth';
-import { type SignInResult } from './sign-in-view.component';
+import type { AuthSession, AuthUser } from './model';
+import { Auth } from './service';
+import { type SignInResult } from './sign-in-view';
 
-const SignInView = lazy(() => import('./sign-in-view.component'));
+const SignInView = lazy(() => import('./sign-in-view'));
 
 interface AuthContext {
   readonly session: Accessor<AuthSession>;

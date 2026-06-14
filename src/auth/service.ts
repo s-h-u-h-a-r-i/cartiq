@@ -2,18 +2,8 @@ import type { Session as SupabaseSession, User as SupabaseUser } from '@supabase
 import { Effect } from 'effect';
 
 import { Supabase } from '@/supabase';
-import { supabaseErrorToAuthError, unknownToAuthError } from './auth.error';
-
-export interface AuthUser {
-  readonly id: string;
-  readonly email: string | null;
-  readonly displayName: string | null;
-  readonly avatarUrl: string | null;
-}
-
-export interface AuthSession {
-  readonly user: AuthUser;
-}
+import { supabaseErrorToAuthError, unknownToAuthError } from './error';
+import type { AuthSession, AuthUser } from './model';
 
 export class Auth extends Effect.Service<Auth>()('cartiq/Auth', {
   accessors: true,

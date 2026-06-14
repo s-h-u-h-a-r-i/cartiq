@@ -1,4 +1,4 @@
-import { AuthMock } from '@/auth/auth.mock';
+import { AuthMock } from '@/auth';
 
 export const MODE = 'mock';
 

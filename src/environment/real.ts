@@ -1,4 +1,4 @@
-import { Auth } from '@/auth/auth';
+import { Auth } from '@/auth';
 
 export const MODE = 'real';
 

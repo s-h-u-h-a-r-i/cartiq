@@ -1,7 +1,8 @@
 import { Effect, Layer } from 'effect';
 
 import { createSubscriptionStore } from '@/shared/subscription-store';
-import { Auth, type AuthSession, type AuthUser } from './auth';
+import type { AuthSession, AuthUser } from './model';
+import { Auth } from './service';
 
 const mockUser = {
   id: 'mock-user-001',
