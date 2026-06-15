@@ -13,6 +13,7 @@ import {
 } from 'solid-js';
 
 import { run } from '@/app';
+import { LoadingScreen } from '@/layout';
 import type { AuthSession, AuthUser } from './model';
 import { Auth } from './service';
 import { type SignInResult } from './sign-in-view';
@@ -68,7 +69,7 @@ export const AuthProvider: ParentComponent = (props) => {
   return (
     <Switch>
       <Match when={isInitializing()}>
-        <main>Loading...</main>
+        <LoadingScreen />
       </Match>
 
       <Match when={error()}>{(message) => <main>{message()}</main>}</Match>

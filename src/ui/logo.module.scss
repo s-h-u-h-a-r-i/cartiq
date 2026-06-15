@@ -3,27 +3,113 @@
   width: max-content;
   align-items: baseline;
   gap: var(--space-1);
-  color: var(--color-text);
-  font-size: var(--font-size-6);
+  color: var(--logo-color);
+  font-size: var(--logo-font-size);
   font-weight: 700;
   line-height: var(--line-height-tight);
   letter-spacing: 0;
+}
+
+.sizeSm {
+  --logo-font-size: 1.1875rem;
+}
+
+.sizeMd {
+  --logo-font-size: 2rem;
+}
+
+.sizeLg {
+  --logo-font-size: 3rem;
+}
+
+.sizeXl {
+  --logo-font-size: 5rem;
+}
+
+.toneDefault {
+  --logo-color: var(--color-text);
+  --logo-badge-background: var(--color-accent);
+  --logo-badge-border: color-mix(in srgb, var(--color-accent-strong) 74%, black);
+  --logo-badge-color: var(--color-surface);
+}
+
+.toneMuted {
+  --logo-color: var(--color-text-muted);
+  --logo-badge-background: var(--color-surface-muted);
+  --logo-badge-border: var(--color-border);
+  --logo-badge-color: var(--color-text);
+}
+
+.toneInverse {
+  --logo-color: var(--color-surface);
+  --logo-badge-background: var(--color-surface);
+  --logo-badge-border: color-mix(in srgb, var(--color-surface) 72%, transparent);
+  --logo-badge-color: var(--color-accent-strong);
 }
 
 .cart {
   color: inherit;
 }
 
-.iq {
+.badge {
   display: inline-grid;
   min-width: 1.9em;
   min-height: 1.35em;
   place-items: center;
-  border: 1px solid color-mix(in srgb, var(--color-accent-strong) 74%, black);
+  border: 1px solid var(--logo-badge-border);
   border-radius: var(--radius-2);
-  background: var(--color-accent);
-  color: var(--color-surface);
+  background: var(--logo-badge-background);
+  color: var(--logo-badge-color);
   font-size: 0.58em;
   line-height: 1;
   transform: rotate(-2deg) translateY(-0.08em);
+  transform-origin: 50% 80%;
+}
+
+.animationBounce {
+  animation-name: logo-badge-bounce;
+  animation-duration: 1400ms;
+  animation-timing-function: ease-in-out;
+}
+
+.animationShake {
+  animation-name: logo-badge-shake;
+  animation-duration: 1020ms;
+  animation-timing-function: ease-in-out;
+}
+
+.isAnimationSingleRun {
+  animation-iteration-count: 1;
+}
+
+.isAnimationLooping {
+  animation-iteration-count: infinite;
+}
+
+@keyframes logo-badge-bounce {
+  0%,
+  64%,
+  100% {
+    transform: rotate(-2deg) translateY(-0.08em) scale(1);
+  }
+
+  32% {
+    transform: rotate(2deg) translateY(-0.24em) scale(1.04);
+  }
+}
+
+@keyframes logo-badge-shake {
+  0%,
+  51%,
+  100% {
+    transform: rotate(-2deg) translateY(-0.08em);
+  }
+
+  13% {
+    transform: rotate(-7deg) translateY(-0.08em);
+  }
+
+  38% {
+    transform: rotate(3deg) translateY(-0.08em);
+  }
 }

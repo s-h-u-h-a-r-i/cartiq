@@ -1,0 +1,9 @@
+.screen {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+}
+
+.logo {
+  font-size: clamp(var(--font-size-6), 12vw, 5rem);
+}

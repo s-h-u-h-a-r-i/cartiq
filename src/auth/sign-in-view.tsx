@@ -28,10 +28,7 @@ const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (
     <main class={styles.page}>
       <section class={styles.panel} aria-labelledby='sign-in-title'>
         <div class={styles.heading}>
-          <Logo labelId='sign-in-title' />
-          <h1 id='sign-in-title' class={styles.title}>
-            CartIQ
-          </h1>
+          <Logo labelId='sign-in-title' size='lg' />
           <p>Smarter shopping starts here.</p>
         </div>
 
