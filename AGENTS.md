@@ -76,3 +76,11 @@ src/
 - Do not refactor unrelated files while implementing a feature.
 - Preserve existing naming and structure conventions.
 - Validate meaningful code changes with the project’s available typecheck or build command.
+
+## Implementation Discipline
+
+- Do not invent wrappers, adapters, helper components, or abstractions when the user asks for a direct import, export, or file change.
+- Before proposing implementation code, inspect the relevant package, file, or API that the implementation depends on.
+- Keep responsive and state-specific CSS overrides minimal; do not repeat base rules inside media queries unless the value actually changes.
+- When changing a markdown implementation plan, keep it directly applicable and remove obsolete snippets instead of layering corrections on top.
+- If a proposed change creates a new file, explicitly justify why the existing files cannot handle it.
