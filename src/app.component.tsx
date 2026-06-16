@@ -1,30 +1,24 @@
 import { type Component } from 'solid-js';
 
 import { AuthProvider, useAuth } from './auth';
-import { AppBackdropProvider } from './layout';
+import { AppBackdropProvider, AppShell } from './layout';
 
-const Home: Component = () => {
+const App: Component = () => (
+  <AppBackdropProvider>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  </AppBackdropProvider>
+);
+
+export default App;
+
+const AppContent: Component = () => {
   const auth = useAuth();
 
   return (
-    <main>
-      <h1>CartIQ</h1>
-      <p>{auth.user().email}</p>
-      <button type='button' onClick={() => void auth.signOut()}>
-        Sign out
-      </button>
-    </main>
+    <AppShell leftSidebar={null} rightSidebar={null}>
+      {null}
+    </AppShell>
   );
 };
-
-const App: Component = () => {
-  return (
-    <AppBackdropProvider>
-      <AuthProvider>
-        <Home />
-      </AuthProvider>
-    </AppBackdropProvider>
-  );
-};
-
-export default App;
