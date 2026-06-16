@@ -15,8 +15,8 @@
     "db:restart": "supabase stop && supabase start",
     "db:reset": "supabase db reset",
     "db: migration": "supabase migration new",
-    "db:types:local": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
-    "db:types:remote": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts",
+    "db:types:local": "supabase gen types typescript --local > src/supabase/database.types.ts",
+    "db:types:remote": "supabase gen types typescript --linked > src/supabase/database.types.ts",
     "db:reset:types:local": "supabase db reset && bun run db:types:local",
     "db:push": "supabase db push"
   },
