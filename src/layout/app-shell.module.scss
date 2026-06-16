@@ -1,93 +1,141 @@
 @use '/src/styles/breakpoints.scss' as *;
 
-$mobile-sidebar-width: 84vw;
-$mobile-main-width: 100vw;
-$mobile-side-peek-width: calc($mobile-main-width - $mobile-sidebar-width);
-$mobile-track-width: calc(($mobile-sidebar-width * 2) + $mobile-main-width);
-$mobile-right-offset: calc($mobile-track-width - $mobile-main-width);
+$top-bar-height: 3.5rem;
+$mobile-sidebar-width: min(22rem, 86vw);
+$desktop-left-sidebar-width: minmax(13rem, 17rem);
+$desktop-right-sidebar-width: minmax(15rem, 21rem);
+$sidebar-transition-duration: 180ms;
 
 .shell {
+  position: relative;
+  display: grid;
+  grid-template-rows: $top-bar-height minmax(0, 1fr);
   height: 100svh;
   min-height: 0;
   overflow: hidden;
   color: var(--color-text);
 }
 
-.leftSidebar,
+.topBar {
+  display: grid;
+  grid-template-columns: $top-bar-height minmax(0, 1fr) $top-bar-height;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+}
+
+.title {
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-tight);
+}
+
+.iconButton,
+.scrim {
+  border: 0;
+  font: inherit;
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  min-width: $top-bar-height;
+  min-height: $top-bar-height;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text);
+}
+
 .mainContent,
-.rightSidebar {
+.sidebar {
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-}
-
-.leftSidebar {
-  background: color-mix(in srgb, var(--color-surface) 86%, transparent);
-  border-right: 1px solid var(--color-border);
 }
 
 .mainContent {
   background: color-mix(in srgb, var(--color-page) 70%, transparent);
 }
 
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 20;
+  width: $mobile-sidebar-width;
+  background: var(--color-surface);
+  transition: transform $sidebar-transition-duration ease;
+}
+
+.sidebarHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  min-height: $top-bar-height;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.leftSidebar {
+  left: 0;
+  border-right: 1px solid var(--color-border);
+  transform: translateX(-100%);
+
+  .sidebarHeader {
+    justify-content: flex-start;
+  }
+}
+
 .rightSidebar {
-  background: color-mix(in srgb, var(--color-surface) 72%, transparent);
+  right: 0;
   border-left: 1px solid var(--color-border);
+  transform: translateX(100%);
+
+  .sidebarHeader {
+    justify-content: flex-end;
+  }
 }
 
-.mobileControls {
-  display: none;
+.isOpen {
+  transform: translateX(0);
 }
 
-.emptyPanel {
-  min-height: 100%;
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--color-text) 28%, transparent);
+  opacity: 0;
+  transition: opacity $sidebar-transition-duration ease;
+}
+
+.isScrimVisible {
+  pointer-events: auto;
+  opacity: 1;
 }
 
 @include screen-up($screen-md) {
   .shell {
-    display: grid;
-    grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr) minmax(15rem, 21rem);
-  }
-}
-
-@include screen-down($screen-md) {
-  .shell {
-    display: grid;
-    grid-template-columns: $mobile-sidebar-width $mobile-main-width $mobile-sidebar-width;
-    width: $mobile-track-width;
-    transition: transform 220ms ease;
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: $desktop-left-sidebar-width minmax(0, 1fr) $desktop-right-sidebar-width;
   }
 
-  .showLeftPanel {
-    transform: translateX(0);
+  .topBar,
+  .sidebarHeader,
+  .scrim {
+    display: none;
   }
 
-  .showMainPanel {
-    transform: translateX(-$mobile-sidebar-width);
-  }
-
-  .showRightPanel {
-    transform: translateX(-$mobile-right-offset);
-  }
-
-  .mobileControls {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    display: flex;
-    gap: var(--space-2);
-    padding: var(--space-3);
-    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .mobileControls button {
-    min-height: 2.25rem;
-    padding: 0 var(--space-3);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-2);
-    background: var(--color-surface);
-    color: var(--color-text);
-    font: inherit;
+  .sidebar {
+    position: static;
+    z-index: auto;
+    width: auto;
+    transform: none;
+    transition: none;
   }
 }

@@ -17,7 +17,7 @@ const AppContent: Component = () => {
   const auth = useAuth();
 
   return (
-    <AppShell leftSidebar={null} rightSidebar={null}>
+    <AppShell title='Lists' leftSidebar={null} rightSidebar={null}>
       {null}
     </AppShell>
   );
