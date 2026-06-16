@@ -1,7 +1,8 @@
 import { type Component } from 'solid-js';
 
 import { AuthProvider, useAuth } from './auth';
-import { AppBackdropProvider, AppShell } from './layout';
+import { AppBackdropProvider } from './layout/app-backdrop';
+import { AppShell } from './layout/app-shell';
 
 const App: Component = () => (
   <AppBackdropProvider>

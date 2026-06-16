@@ -12,7 +12,7 @@ import {
 } from 'solid-js';
 
 import { run } from '@/app';
-import { LoadingScreen } from '@/layout';
+import { LoadingScreen } from '@/layout/loading-screen';
 import type { AuthSession, AuthUser } from './model';
 import { Auth } from './service';
 import SignInView, { type SignInResult } from './sign-in-view';

@@ -1,6 +1,6 @@
 import { Component, createSignal, onMount, Show } from 'solid-js';
 
-import { useAppBackdrop } from '@/layout';
+import { useAppBackdrop } from '@/layout/app-backdrop';
 import { Button } from '@/ui/button';
 import { Logo } from '@/ui/logo';
 
