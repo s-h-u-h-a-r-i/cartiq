@@ -7,7 +7,7 @@
       "dependencies": {
         "@supabase/supabase-js": "^2.108.1",
         "effect": "^3.21.3",
-        "lucide": "^1.18.0",
+        "lucide-solid": "^1.20.0",
         "solid-js": "^1.9.5",
       },
       "devDependencies": {
@@ -305,7 +305,7 @@
 
     "lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "3.1.1" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
 
-    "lucide": ["lucide@1.18.0", "", {}, "sha512-xzUa3LbA/Uvn3DCs7B7YfDcOZeqV8aZ4r4OFyCgJSfZGUdMglJiK3PJSbd26SXLLQvGGsYX9PdETCRXvfK4rnA=="],
+    "lucide-solid": ["lucide-solid@1.20.0", "", { "peerDependencies": { "solid-js": "^1.4.7" } }, "sha512-27Hzrx2NJaOFNLS5HACEoK4C0W9IaAfh6Zl3EDpMpSJeTzL3rU7RzEzz/tDwzgf2JSKPihm8N8FKfLJJvbwA+A=="],
 
     "merge-anything": ["merge-anything@5.1.7", "", { "dependencies": { "is-what": "4.1.16" } }, "sha512-eRtbOb1N5iyH0tkQDAoQ4Ipsp/5qSR79Dzrz8hEPxRX10RWWR/iQXdoKmBSRCThY1Fh5EhISDtpSc93fpxUniQ=="],
 
