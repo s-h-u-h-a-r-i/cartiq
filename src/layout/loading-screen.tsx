@@ -1,6 +1,6 @@
 import { Component, onCleanup, onMount } from 'solid-js';
 
-import { Logo } from '@/ui';
+import { Logo } from '@/ui/logo';
 import { useAppBackdrop } from './app-backdrop';
 import styles from './loading-screen.module.scss';
 

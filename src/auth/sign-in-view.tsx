@@ -1,7 +1,8 @@
 import { Component, createSignal, onMount, Show } from 'solid-js';
 
 import { useAppBackdrop } from '@/layout';
-import { Button, Logo } from '@/ui';
+import { Button } from '@/ui/button';
+import { Logo } from '@/ui/logo';
 
 import styles from './sign-in-view.module.scss';
 
