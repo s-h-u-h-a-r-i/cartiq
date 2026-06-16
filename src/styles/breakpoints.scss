@@ -1,0 +1,16 @@
+$screen-sm: 36rem;
+$screen-md: 48rem;
+$screen-lg: 64rem;
+$screen-xl: 80rem;
+
+@mixin screen-up($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin screen-down($breakpoint) {
+  @media (max-width: calc($breakpoint - 0.02px)) {
+    @content;
+  }
+}
