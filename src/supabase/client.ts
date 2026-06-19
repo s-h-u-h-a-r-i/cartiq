@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { Effect } from 'effect';
 
+import { Database } from './database.types';
+
 export class Supabase extends Effect.Service<Supabase>()('cartiq/Supabase', {
   sync: () => {
     const url = import.meta.env.VITE_SUPABASE_URL;
@@ -10,6 +12,6 @@ export class Supabase extends Effect.Service<Supabase>()('cartiq/Supabase', {
       throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
     }
 
-    return createClient(url, anonKey);
+    return createClient<Database>(url, anonKey);
   },
 }) {}
