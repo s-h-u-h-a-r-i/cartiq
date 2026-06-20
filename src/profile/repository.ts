@@ -15,7 +15,7 @@ export class ProfileRepository extends Effect.Service<ProfileRepository>()(
   'cartiq/ProfileRepository',
   {
     accessors: true,
-    dependencies: [Supabase.Default], // TODO: maybe make this contain CRUD with error conversions
+    dependencies: [Supabase.Default],
     effect: Effect.gen(function* () {
       const supabase = yield* Supabase;
 
