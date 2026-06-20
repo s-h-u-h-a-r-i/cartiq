@@ -14,11 +14,10 @@ import {
 import { run } from '@/app';
 import { LoadingScreen } from '@/layout/loading-screen';
 import { Auth } from './auth';
-import type { AuthSession, AuthUser } from './model';
+import type { AuthUser } from './model';
 import SignInView, { type SignInResult } from './sign-in-view';
 
 interface AuthContext {
-  readonly session: Accessor<AuthSession>;
   readonly user: Accessor<AuthUser>;
   signOut(): Promise<void>;
 }
@@ -26,7 +25,7 @@ interface AuthContext {
 const AuthContext = createContext<AuthContext>();
 
 export const AuthProvider: ParentComponent = (props) => {
-  const [session, setSession] = createSignal<AuthSession | null>(null);
+  const [user, setUser] = createSignal<AuthUser | null>(null);
   const [isInitializing, setIsInitializing] = createSignal(true);
   const [error, setError] = createSignal<string | null>(null);
 
@@ -34,19 +33,13 @@ export const AuthProvider: ParentComponent = (props) => {
     let unsubscribe: () => void | undefined;
 
     void run(
-      Effect.gen(function* () {
-        const currentSession = yield* Auth.getSession;
-        const stopObserving = yield* Auth.observeSession(setSession);
-
-        unsubscribe = stopObserving;
-        setSession(currentSession);
-      }).pipe(
-        Effect.catchAll((e) => Effect.sync(() => setError(e.message))),
-        Effect.ensuring(
+      Auth.observeUser(setUser, setError).pipe(
+        Effect.tap((unsub) =>
           Effect.sync(() => {
-            setIsInitializing(false);
+            unsubscribe = unsub;
           })
-        )
+        ),
+        Effect.ensuring(Effect.sync(() => setIsInitializing(false)))
       )
     );
 
@@ -71,16 +64,15 @@ export const AuthProvider: ParentComponent = (props) => {
 
       <Match when={error()}>{(message) => <main>{message()}</main>}</Match>
 
-      <Match when={session() === null}>
+      <Match when={user() === null}>
         <SignInView onSignInWithGoogle={signInWithGoogle} />
       </Match>
 
-      <Match when={session()}>
-        {(resolvedSession) => (
+      <Match when={user()}>
+        {(u) => (
           <AuthContext.Provider
             value={{
-              session: resolvedSession,
-              user: () => resolvedSession().user,
+              user: u,
               signOut,
             }}>
             {props.children}

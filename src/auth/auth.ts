@@ -1,9 +1,9 @@
-import type { Session as SupabaseSession, User as SupabaseUser } from '@supabase/supabase-js';
-import { Effect } from 'effect';
+import type { Session, AuthError as SupabaseAuthError } from '@supabase/supabase-js';
+import { Effect, Schema } from 'effect';
 
 import { Supabase } from '@/supabase';
-import { supabaseErrorToAuthError, unknownToAuthError } from './error';
-import type { AuthSession, AuthUser } from './model';
+import { AuthError, authErrorFromUnknown, failAuthFromParse, failAuthFromSupabase } from './error';
+import { AuthUser } from './model';
 
 export class Auth extends Effect.Service<Auth>()('cartiq/Auth', {
   accessors: true,
@@ -12,41 +12,28 @@ export class Auth extends Effect.Service<Auth>()('cartiq/Auth', {
     const supabase = yield* Supabase;
 
     return {
-      getSession: Effect.tryPromise({
-        try: () => supabase.auth.getSession(),
-        catch: unknownToAuthError,
-      }).pipe(
-        Effect.flatMap(({ data, error }) =>
-          error
-            ? Effect.fail(supabaseErrorToAuthError(error))
-            : Effect.succeed(data.session ? toAuthSession(data.session) : null)
-        )
-      ),
+      signInWithGoogle: readAuthResponse(() =>
+        supabase.auth.signInWithOAuth({ provider: 'google' })
+      ).pipe(Effect.asVoid),
 
-      signInWithGoogle: Effect.tryPromise({
-        try: () => supabase.auth.signInWithOAuth({ provider: 'google' }),
-        catch: unknownToAuthError,
-      }).pipe(
-        Effect.flatMap(({ error }) =>
-          error ? Effect.fail(supabaseErrorToAuthError(error)) : Effect.void
-        )
-      ),
+      signOut: readAuthResponse(() => supabase.auth.signOut()).pipe(Effect.asVoid),
 
-      signOut: Effect.tryPromise({
-        try: () => supabase.auth.signOut(),
-        catch: unknownToAuthError,
-      }).pipe(
-        Effect.flatMap(({ error }) =>
-          error ? Effect.fail(supabaseErrorToAuthError(error)) : Effect.void
-        )
-      ),
-
-      observeSession: (onChange: (session: AuthSession | null) => void) =>
+      observeUser: (
+        onChange: (user: AuthUser | null) => void,
+        onError: (error: AuthError) => void
+      ) =>
         Effect.sync(() => {
           const {
             data: { subscription },
           } = supabase.auth.onAuthStateChange((_event, session) => {
-            onChange(session ? toAuthSession(session) : null);
+            void Effect.runPromise(
+              decodeAuthUserFromSession(session).pipe(
+                Effect.match({
+                  onFailure: onError,
+                  onSuccess: onChange,
+                })
+              )
+            );
           });
 
           return () => subscription.unsubscribe();
@@ -55,22 +42,21 @@ export class Auth extends Effect.Service<Auth>()('cartiq/Auth', {
   }),
 }) {}
 
-function toAuthSession(session: SupabaseSession): AuthSession {
-  return {
-    user: toAuthUser(session.user),
-  };
+interface AuthResponseWithError {
+  readonly error: SupabaseAuthError | null;
 }
 
-function toAuthUser(user: SupabaseUser): AuthUser {
-  return {
-    id: user.id,
-    email: user.email ?? null,
-    displayName: getStringMetadata(user, 'full_name'),
-    avatarUrl: getStringMetadata(user, 'avatar_url'),
-  };
-}
+const readAuthResponse = <T extends AuthResponseWithError>(request: () => PromiseLike<T>) =>
+  Effect.gen(function* () {
+    const response = yield* Effect.tryPromise({
+      try: request,
+      catch: authErrorFromUnknown,
+    });
+    if (response.error) return yield* failAuthFromSupabase(response.error);
+    return response;
+  });
 
-function getStringMetadata(user: SupabaseUser, key: string) {
-  const value = user.user_metadata[key];
-  return typeof value === 'string' ? value : null;
-}
+const decodeAuthUserFromSession = (session: Session | null) =>
+  session === null
+    ? Effect.succeed(null)
+    : Schema.decode(AuthUser)(session.user).pipe(Effect.catchTag('ParseError', failAuthFromParse));

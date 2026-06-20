@@ -6,7 +6,6 @@ import {
   failProfileFromParse,
   failProfileFromSupabase,
   failProfileNotFound,
-  ProfileError,
   profileErrorFromUnknown,
 } from './error';
 import { Profile, UpdateProfileInput } from './model';
@@ -21,28 +20,21 @@ export class ProfileRepository extends Effect.Service<ProfileRepository>()(
 
       return {
         getProfile: (userId: string) =>
-          readProfileResponse(
-            Effect.tryPromise({
-              try: () => supabase.from('profiles').select('*').eq('id', userId).maybeSingle(),
-              catch: profileErrorFromUnknown,
-            })
+          readProfileResponse(() =>
+            supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
           ),
 
         updateProfile: (userId: string, input: UpdateProfileInput) =>
           Schema.encode(UpdateProfileInput)(input).pipe(
             Effect.catchTag('ParseError', failProfileFromParse),
             Effect.flatMap((profileUpdate) =>
-              readProfileResponse(
-                Effect.tryPromise({
-                  try: () =>
-                    supabase
-                      .from('profiles')
-                      .update(profileUpdate)
-                      .eq('id', userId)
-                      .select()
-                      .maybeSingle(),
-                  catch: profileErrorFromUnknown,
-                })
+              readProfileResponse(() =>
+                supabase
+                  .from('profiles')
+                  .update(profileUpdate)
+                  .eq('id', userId)
+                  .select()
+                  .maybeSingle()
               )
             )
           ),
@@ -51,17 +43,16 @@ export class ProfileRepository extends Effect.Service<ProfileRepository>()(
   }
 ) {}
 
-const readProfileResponse = <T>(effect: Effect.Effect<PostgrestSingleResponse<T>, ProfileError>) =>
-  Effect.gen(function* () {
-    const response = yield* effect;
-    if (!response.success) {
-      return yield* failProfileFromSupabase(response.error);
-    }
-    if (response.data === null) {
-      return yield* failProfileNotFound();
-    }
-    const decoded = yield* Schema.decodeUnknown(Profile)(response.data).pipe(
-      Effect.catchTag('ParseError', failProfileFromParse)
-    );
-    return decoded;
-  });
+const readProfileResponse = <T>(request: () => PromiseLike<PostgrestSingleResponse<T>>) =>
+  Effect.tryPromise({ try: request, catch: profileErrorFromUnknown }).pipe(
+    Effect.filterOrElse(
+      (response) => response.success === true,
+      ({ error }) => failProfileFromSupabase(error)
+    ),
+    Effect.filterOrElse(
+      (response) => response.data !== null,
+      () => failProfileNotFound()
+    ),
+    Effect.flatMap(({ data }) => Schema.decodeUnknown(Profile)(data)),
+    Effect.catchTag('ParseError', failProfileFromParse)
+  );
