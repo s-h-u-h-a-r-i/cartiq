@@ -13,8 +13,8 @@ import {
 
 import { run } from '@/app';
 import { LoadingScreen } from '@/layout/loading-screen';
+import { Auth } from './auth';
 import type { AuthSession, AuthUser } from './model';
-import { Auth } from './service';
 import SignInView, { type SignInResult } from './sign-in-view';
 
 interface AuthContext {
@@ -56,7 +56,7 @@ export const AuthProvider: ParentComponent = (props) => {
   const signInWithGoogle = (): Promise<SignInResult> =>
     run(
       Auth.signInWithGoogle.pipe(
-        Effect.map(() => ({ ok: true }) as const),
+        Effect.map(() => ({ ok: true } as const)),
         Effect.catchAll((e) => Effect.succeed({ ok: false, message: e.message } as const))
       )
     );
