@@ -1,4 +1,5 @@
 export type Subscription<T> = (value: T) => void;
+export type SubscriptionUpdater<T> = (currentValue: T) => T;
 
 export function createSubscriptionStore<T>(initialValue: T) {
   let currentValue = initialValue;
@@ -14,6 +15,12 @@ export function createSubscriptionStore<T>(initialValue: T) {
     }
   };
 
+  const update = (updater: SubscriptionUpdater<T>) => {
+    const nextValue = updater(currentValue);
+    set(nextValue);
+    return nextValue;
+  };
+
   const subscribe = (listener: Subscription<T>) => {
     listeners.add(listener);
     queueMicrotask(() => listener(currentValue));
@@ -25,6 +32,7 @@ export function createSubscriptionStore<T>(initialValue: T) {
   return {
     get,
     set,
+    update,
     subscribe,
   };
 }
