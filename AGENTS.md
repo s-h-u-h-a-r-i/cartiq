@@ -5,16 +5,16 @@
 - Model application dependencies as Effect services when there is a real dependency boundary.
 - Define service requirements with `Context.Tag`.
 - Provide service implementations with `Layer`.
-- Keep real and mock implementations separate.
-- Select implementations at the application boundary, not inside UI components.
+- Select application dependencies at the application boundary, not inside UI components.
 - UI code should run effects through the shared runtime boundary.
 - Avoid wrapper functions that only delegate to another service unless they add real use-case logic.
 
-## Data Modes
+## Local Data
 
-- Real and mock behavior should be selected through environment or build/runtime mode.
-- Mock implementations should not require real external service credentials.
-- New external integrations should have a mock implementation before they become required for local development.
+- Use local Supabase data, migrations, and seed data for development scenarios.
+
+- Keep seeded data aligned with generated Supabase types and repository decoding boundaries.
+- New external integrations should have a local development path before they become required for everyday development.
 
 ## Project Layout Outline
 
@@ -30,13 +30,10 @@ src/
     service.ts
     model.ts
     error.ts
-    live.ts
-    mock.ts
     index.ts
 
   <external-adapter>/
     client.ts
-    live.ts
     index.ts
 
   ui/
