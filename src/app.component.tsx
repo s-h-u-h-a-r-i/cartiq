@@ -3,11 +3,15 @@ import { type Component } from 'solid-js';
 import { AuthProvider, useAuth } from './auth';
 import { AppBackdropProvider } from './layout/app-backdrop';
 import { AppShell } from './layout/app-shell';
+import { ProfileProvider } from './profile';
 
 const App: Component = () => (
+  // TODO: Use Error and suspense boundary
   <AppBackdropProvider>
     <AuthProvider>
-      <AppContent />
+      <ProfileProvider>
+        <AppContent />
+      </ProfileProvider>
     </AuthProvider>
   </AppBackdropProvider>
 );

@@ -2,6 +2,7 @@ export type Subscription<T> = (value: T) => void;
 export type SubscriptionUpdater<T> = (currentValue: T) => T;
 
 export function createSubscriptionStore<T>(initialValue: T) {
+  // TODO: Convert to use Effect
   let currentValue = initialValue;
   const listeners = new Set<Subscription<T>>();
 
