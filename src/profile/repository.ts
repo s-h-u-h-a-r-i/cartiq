@@ -2,12 +2,7 @@ import { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { Effect, Schema } from 'effect';
 
 import { Supabase } from '@/supabase';
-import {
-  failProfileFromParse,
-  failProfileFromSupabase,
-  failProfileNotFound,
-  profileErrorFromUnknown,
-} from './error';
+import { ProfileError } from './error';
 import { Profile, UpdateProfileInput } from './model';
 
 export class ProfileRepository extends Effect.Service<ProfileRepository>()(
@@ -26,7 +21,7 @@ export class ProfileRepository extends Effect.Service<ProfileRepository>()(
 
         updateProfile: (userId: string, input: UpdateProfileInput) =>
           Schema.encode(UpdateProfileInput)(input).pipe(
-            Effect.catchTag('ParseError', failProfileFromParse),
+            Effect.mapError(ProfileError.fromParse),
             Effect.flatMap((profileUpdate) =>
               readProfileResponse(() =>
                 supabase
@@ -44,15 +39,13 @@ export class ProfileRepository extends Effect.Service<ProfileRepository>()(
 ) {}
 
 const readProfileResponse = <T>(request: () => PromiseLike<PostgrestSingleResponse<T>>) =>
-  Effect.tryPromise({ try: request, catch: profileErrorFromUnknown }).pipe(
+  Effect.tryPromise({ try: request, catch: ProfileError.fromUnknown }).pipe(
     Effect.filterOrElse(
       (response) => response.success === true,
-      ({ error }) => failProfileFromSupabase(error)
+      ({ error }) => ProfileError.fromSupabase(error)
     ),
-    Effect.filterOrElse(
-      (response) => response.data !== null,
-      () => failProfileNotFound()
-    ),
-    Effect.flatMap(({ data }) => Schema.decodeUnknown(Profile)(data)),
-    Effect.catchTag('ParseError', failProfileFromParse)
+    Effect.filterOrElse((response) => response.data !== null, ProfileError.notFound),
+    Effect.flatMap(({ data }) =>
+      Schema.decodeUnknown(Profile)(data).pipe(Effect.mapError(ProfileError.fromParse))
+    )
   );
