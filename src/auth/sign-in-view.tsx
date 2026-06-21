@@ -49,3 +49,4 @@ const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (
 };
 
 export default SignInView;
+

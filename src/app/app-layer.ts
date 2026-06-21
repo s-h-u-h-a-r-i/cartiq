@@ -1,5 +1,6 @@
 import { Layer } from 'effect';
 
-import { AppSession } from '@/session/session';
+import { Auth } from '@/auth/service';
+import { ProfileRepository } from '@/profile/repository';
 
-export const AppLayer = Layer.mergeAll(AppSession.Default);
+export const AppLayer = Layer.mergeAll(Auth.Default, ProfileRepository.Default);
