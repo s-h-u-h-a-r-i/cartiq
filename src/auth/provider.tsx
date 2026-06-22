@@ -3,11 +3,10 @@ import {
   Accessor,
   createContext,
   createSignal,
-  Match,
   onCleanup,
   onMount,
   ParentComponent,
-  Switch,
+  Show,
   useContext,
 } from 'solid-js';
 
@@ -43,7 +42,10 @@ export const AuthProvider: ParentComponent = (props) => {
     let unsubscribe: (() => void) | undefined;
 
     void run(
-      Auth.observeUser(setUser, (e) => setError(e.message)).pipe(
+      Auth.observeUser(
+        (user) => setUser(user),
+        (e) => setError(e.message)
+      ).pipe(
         Effect.tap((unsub) =>
           Effect.sync(() => {
             unsubscribe = unsub;
@@ -57,21 +59,15 @@ export const AuthProvider: ParentComponent = (props) => {
   });
 
   return (
-    <Switch>
-      <Match when={isInitializing()}>
-        <LoadingScreen />
-      </Match>
-
-      <Match when={user() === null}>
-        <SignInView onSignInWithGoogle={signInWithGoogle} />
-      </Match>
-
-      <Match when={user()}>
+    <Show when={!isInitializing()} fallback={<LoadingScreen />}>
+      <Show when={user()} keyed fallback={<SignInView onSignInWithGoogle={signInWithGoogle} />}>
         {(u) => (
-          <AuthContext.Provider value={{ user: u, signOut }}>{props.children}</AuthContext.Provider>
+          <AuthContext.Provider value={{ user: () => u, signOut }}>
+            {props.children}
+          </AuthContext.Provider>
         )}
-      </Match>
-    </Switch>
+      </Show>
+    </Show>
   );
 };
 
@@ -82,4 +78,3 @@ export function useAuth() {
   }
   return ctx;
 }
-

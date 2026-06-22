@@ -2,9 +2,9 @@ import { Effect } from 'effect';
 import {
   Accessor,
   createContext,
-  createEffect,
   createSignal,
   Match,
+  onMount,
   ParentComponent,
   Switch,
   useContext,
@@ -26,56 +26,46 @@ const ProfileContext = createContext<ProfileContext>();
 
 export const ProfileProvider: ParentComponent = (props) => {
   const auth = useAuth();
+  const userId = auth.user().id;
   const [profile, setProfile] = createSignal<Profile | null>(null);
   const [, setError] = createSignal<string | null>(null);
 
-  const loadProfile = (userId: string) =>
+  const loadProfile = () =>
     run(
       ProfileRepository.getProfile(userId).pipe(
         Effect.tap((nextProfile) =>
           Effect.sync(() => {
-            if (auth.user().id === userId) {
-              setProfile(nextProfile);
-              setError(null);
-            }
+            setProfile(nextProfile);
+            setError(null);
           })
         ),
         Effect.catchAll((e) =>
           Effect.sync(() => {
-            if (auth.user().id === userId) {
-              setProfile(null);
-              setError(e.message);
-            }
+            setProfile(null);
+            setError(e.message);
           })
         ),
         Effect.asVoid
       )
     );
 
-  const reloadProfile = () => loadProfile(auth.user().id);
+  const reloadProfile = () => loadProfile();
 
-  const updateProfile = (input: ProfileUpdateInput) => {
-    const userId = auth.user().id;
-
-    return run(
+  const updateProfile = (input: ProfileUpdateInput) =>
+    run(
       ProfileRepository.updateProfile(userId, input).pipe(
         Effect.tap((nextProfile) =>
           Effect.sync(() => {
-            if (auth.user().id === userId) {
-              setProfile(nextProfile);
-              setError(null);
-            }
+            setProfile(nextProfile);
+            setError(null);
           })
         ),
         Effect.asVoid
       )
     );
-  };
 
-  createEffect(() => {
-    const userId = auth.user().id;
-    setProfile(null);
-    void loadProfile(userId);
+  onMount(() => {
+    void loadProfile();
   });
 
   return (
@@ -102,4 +92,3 @@ export function useProfile() {
   }
   return ctx;
 }
-
