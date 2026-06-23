@@ -3,6 +3,9 @@ import 'solid-devtools';
 import { render } from 'solid-js/web';
 
 import App from './app.component';
+import { Auth } from './auth';
+import { ProfileRepository } from './profile';
+import { createSupabaseClient } from './supabase';
 import './styles/index.scss';
 
 const root = document.getElementById('root');
@@ -13,4 +16,11 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-render(() => <App />, root!);
+const supabase = createSupabaseClient();
+const auth = new Auth(supabase);
+const profileRepository = new ProfileRepository(supabase);
+
+render(
+  () => <App auth={auth} profileRepository={profileRepository} />,
+  root!
+);

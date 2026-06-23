@@ -1,19 +1,20 @@
-import { Effect } from 'effect';
 import {
-  Accessor,
+  type Accessor,
   createContext,
   createSignal,
+  Match,
   onCleanup,
   onMount,
-  ParentComponent,
+  type ParentComponent,
   Show,
+  Switch,
   useContext,
 } from 'solid-js';
 
-import { run } from '@/app';
 import { LoadingScreen } from '@/layout/loading-screen';
-import { AuthUser } from './model';
-import { Auth } from './service';
+import { AuthError } from './error';
+import { type AuthUser } from './model';
+import { type Auth } from './service';
 import SignInView from './sign-in-view';
 
 interface AuthContext {
@@ -23,51 +24,89 @@ interface AuthContext {
 
 const AuthContext = createContext<AuthContext>();
 
-export const AuthProvider: ParentComponent = (props) => {
-  const [user, setUser] = createSignal<AuthUser | null>(null);
-  const [isInitializing, setIsInitializing] = createSignal(true);
-  const [, setError] = createSignal<string | null>(null);
+interface AuthProviderProps {
+  readonly auth: Auth;
+}
 
-  const signInWithGoogle = () =>
-    run(
-      Auth.signInWithGoogle.pipe(
-        Effect.map(() => ({ ok: true } as const)),
-        Effect.catchAll((e) => Effect.succeed({ ok: false, message: e.message } as const))
-      )
-    );
+type AuthState =
+  | { readonly status: 'initializing' }
+  | { readonly status: 'signedOut' }
+  | { readonly status: 'signedIn'; readonly user: AuthUser }
+  | { readonly status: 'failed'; readonly error: AuthError };
 
-  const signOut = () => run(Auth.signOut);
+export const AuthProvider: ParentComponent<AuthProviderProps> = (props) => {
+  const [state, setState] = createSignal<AuthState>({
+    status: 'initializing',
+  });
+
+  const isInitializing = () => state().status === 'initializing';
+  const isSignedOut = () => state().status === 'signedOut';
+
+  const user = () => {
+    const current = state();
+    return current.status === 'signedIn' ? current.user : null;
+  };
+
+  const error = () => {
+    const current = state();
+    return current.status === 'failed' ? current.error : null;
+  };
+
+  const authenticatedUser = (expectedUserId: string): AuthUser => {
+    const current = state();
+
+    if (current.status !== 'signedIn' || current.user.id !== expectedUserId) {
+      throw new Error('Authenticated user is unavailable');
+    }
+
+    return current.user;
+  };
 
   onMount(() => {
-    let unsubscribe: (() => void) | undefined;
-
-    void run(
-      Auth.observeUser(
-        (user) => setUser(user),
-        (e) => setError(e.message)
-      ).pipe(
-        Effect.tap((unsub) =>
-          Effect.sync(() => {
-            unsubscribe = unsub;
-          })
-        ),
-        Effect.ensuring(Effect.sync(() => setIsInitializing(false)))
-      )
+    const unsubscribe = props.auth.observeUser(
+      (nextUser) => {
+        setState(
+          nextUser
+            ? { status: 'signedIn', user: nextUser }
+            : { status: 'signedOut' }
+        );
+      },
+      (nextError) => {
+        setState({ status: 'failed', error: nextError });
+      }
     );
 
-    onCleanup(() => unsubscribe?.());
+    onCleanup(unsubscribe);
   });
 
   return (
-    <Show when={!isInitializing()} fallback={<LoadingScreen />}>
-      <Show when={user()} keyed fallback={<SignInView onSignInWithGoogle={signInWithGoogle} />}>
-        {(u) => (
-          <AuthContext.Provider value={{ user: () => u, signOut }}>
-            {props.children}
-          </AuthContext.Provider>
-        )}
-      </Show>
-    </Show>
+    <Switch>
+      <Match when={isInitializing()}>
+        <LoadingScreen />
+      </Match>
+
+      <Match when={error()}>
+        {(authError) => <p role='alert'>{authError().message}</p>}
+      </Match>
+
+      <Match when={isSignedOut()}>
+        <SignInView onSignInWithGoogle={() => props.auth.signInWithGoogle()} />
+      </Match>
+
+      <Match when={user() !== null}>
+        <Show when={user()?.id} keyed>
+          {(authenticatedUserId) => (
+            <AuthContext.Provider
+              value={{
+                user: () => authenticatedUser(authenticatedUserId),
+                signOut: () => props.auth.signOut(),
+              }}>
+              {props.children}
+            </AuthContext.Provider>
+          )}
+        </Show>
+      </Match>
+    </Switch>
   );
 };
 

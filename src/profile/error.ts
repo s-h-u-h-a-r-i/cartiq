@@ -1,36 +1,36 @@
 import { type PostgrestError } from '@supabase/supabase-js';
-import { Data, type ParseResult } from 'effect';
+import { type ZodError } from 'zod';
 
-export class ProfileError extends Data.TaggedError('ProfileError')<{
-  readonly code: string;
-  readonly message: string;
-}> {
-  static fromUnknown(error: unknown) {
-    return new ProfileError({
-      code: 'unexpected_profile_error',
-      message: error instanceof Error ? error.message : 'Unexpected profile error',
+export class ProfileError extends Error {
+  readonly name = 'ProfileError';
+
+  constructor(
+    readonly code: string,
+    message: string,
+    options?: ErrorOptions
+  ) {
+    super(message, options);
+  }
+
+  static fromUnknown(error: unknown): ProfileError {
+    return new ProfileError(
+      'unexpected_profile_error',
+      error instanceof Error ? error.message : 'Unexpected profile error',
+      { cause: error }
+    );
+  }
+
+  static fromPostgrest(error: PostgrestError): ProfileError {
+    return new ProfileError(error.code, error.message, { cause: error });
+  }
+
+  static fromZod(error: ZodError): ProfileError {
+    return new ProfileError('invalid_profile_data', error.message, {
+      cause: error,
     });
   }
 
-  static fromPostgrest(error: PostgrestError) {
-    return new ProfileError({
-      code: error.code,
-      message: error.message,
-    });
-  }
-
-  static fromParse(error: ParseResult.ParseError) {
-    return new ProfileError({
-      code: 'invalid_profile_data',
-      message: error.message,
-    });
-  }
-
-  static notFound() {
-    return new ProfileError({
-      code: 'profile_not_found',
-      message: 'Profile not found',
-    });
+  static notFound(): ProfileError {
+    return new ProfileError('profile_not_found', 'Profile not found');
   }
 }
-

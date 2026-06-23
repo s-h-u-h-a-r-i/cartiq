@@ -1,63 +1,62 @@
-import type { AuthError as SupabaseAuthError } from '@supabase/supabase-js';
-import { Effect, Option } from 'effect';
+import { type AuthError as SupabaseAuthError } from '@supabase/supabase-js';
 
-import { Supabase } from '@/supabase';
+import { type AppSupabaseClient } from '@/supabase';
 import { AuthError } from './error';
-import { AuthUser, decodeAuthUser } from './model';
+import { AuthUserFromSourceSchema, type AuthUser } from './model';
 
-export class Auth extends Effect.Service<Auth>()('cartiq/Auth', {
-  accessors: true,
-  dependencies: [Supabase.Default],
-  effect: Effect.gen(function* () {
-    const supabase = yield* Supabase;
+export class Auth {
+  constructor(private readonly supabase: AppSupabaseClient) {}
 
-    const decodeNullableUser = (user: Parameters<typeof decodeAuthUser>[0] | null) =>
-      Option.match(Option.fromNullable(user), {
-        onNone: () => Effect.succeed(null),
-        onSome: decodeAuthUser,
-      });
+  async signInWithGoogle(): Promise<void> {
+    await this.readAuthResponse(() =>
+      this.supabase.auth.signInWithOAuth({ provider: 'google' })
+    );
+  }
 
-    return {
-      signInWithGoogle: readAuthResponse(() =>
-        supabase.auth.signInWithOAuth({ provider: 'google' })
-      ).pipe(Effect.asVoid),
+  async signOut(): Promise<void> {
+    await this.readAuthResponse(() => this.supabase.auth.signOut());
+  }
 
-      signOut: readAuthResponse(() => supabase.auth.signOut()).pipe(Effect.asVoid),
+  observeUser(
+    onChange: (user: AuthUser | null) => void,
+    onError: (error: AuthError) => void
+  ): () => void {
+    const {
+      data: { subscription },
+    } = this.supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) {
+        onChange(null);
+        return;
+      }
 
-      observeUser: (
-        onChange: (user: AuthUser | null) => void,
-        onError: (error: AuthError) => void
-      ) =>
-        Effect.sync(() => {
-          const {
-            data: { subscription },
-          } = supabase.auth.onAuthStateChange((_event, session) => {
-            Effect.runFork(
-              decodeNullableUser(session?.user ?? null).pipe(
-                Effect.match({
-                  onFailure: onError,
-                  onSuccess: onChange,
-                })
-              )
-            );
-          });
+      const result = AuthUserFromSourceSchema.safeParse(session.user);
 
-          return () => subscription.unsubscribe();
-        }),
-    };
-  }),
-}) {}
+      if (!result.success) {
+        onError(AuthError.fromZod(result.error));
+        return;
+      }
 
-const readAuthResponse = <T extends { readonly error: SupabaseAuthError | null }>(
-  request: () => PromiseLike<T>
-) =>
-  Effect.tryPromise({
-    try: request,
-    catch: AuthError.fromUnknown,
-  }).pipe(
-    Effect.filterOrFail(
-      (response) => response.error === null,
-      (response) => AuthError.fromAuth(response.error!)
-    )
-  );
+      onChange(result.data);
+    });
 
+    return () => subscription.unsubscribe();
+  }
+
+  private async readAuthResponse<T extends { readonly error: SupabaseAuthError | null }>(
+    request: () => PromiseLike<T>
+  ): Promise<T> {
+    let response: T;
+
+    try {
+      response = await request();
+    } catch (error) {
+      throw AuthError.fromUnknown(error);
+    }
+
+    if (response.error) {
+      throw AuthError.fromAuth(response.error);
+    }
+
+    return response;
+  }
+}

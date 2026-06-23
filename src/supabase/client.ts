@@ -1,17 +1,19 @@
-import { createClient } from '@supabase/supabase-js';
-import { Effect } from 'effect';
+import {
+  createClient,
+  type SupabaseClient,
+} from '@supabase/supabase-js';
 
-import { Database } from './database.types';
+import { type Database } from './database.types';
 
-export class Supabase extends Effect.Service<Supabase>()('cartiq/Supabase', {
-  sync: () => {
-    const url = import.meta.env.VITE_SUPABASE_URL;
-    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+export type AppSupabaseClient = SupabaseClient<Database>;
 
-    if (!url || !anonKey) {
-      throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
-    }
+export function createSupabaseClient(): AppSupabaseClient {
+  const url = import.meta.env.VITE_SUPABASE_URL;
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-    return createClient<Database>(url, anonKey);
-  },
-}) {}
+  if (!url || !anonKey) {
+    throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
+  }
+
+  return createClient<Database>(url, anonKey);
+}

@@ -6,9 +6,7 @@ import { Logo } from '@/ui/logo';
 
 import styles from './sign-in-view.module.scss';
 
-export type SignInResult = { readonly ok: true } | { readonly ok: false; readonly message: string };
-
-const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (props) => {
+const SignInView: Component<{ onSignInWithGoogle(): Promise<void> }> = (props) => {
   const backdrop = useAppBackdrop();
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
@@ -20,9 +18,14 @@ const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (
   const signIn = async () => {
     setIsPending(true);
     setError(null);
-    const result = await props.onSignInWithGoogle();
-    if (!result.ok) setError(result.message);
-    setIsPending(false);
+
+    try {
+      await props.onSignInWithGoogle();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Unable to sign in');
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -49,4 +52,3 @@ const SignInView: Component<{ onSignInWithGoogle(): Promise<SignInResult> }> = (
 };
 
 export default SignInView;
-

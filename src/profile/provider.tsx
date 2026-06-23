@@ -1,68 +1,50 @@
-import { Effect } from 'effect';
 import {
-  Accessor,
+  type Accessor,
   createContext,
   createSignal,
   Match,
   onMount,
-  ParentComponent,
+  type ParentComponent,
   Switch,
   useContext,
 } from 'solid-js';
 
-import { run } from '@/app';
 import { useAuth } from '@/auth';
 import { LoadingScreen } from '@/layout/loading-screen';
-import { Profile, ProfileUpdateInput } from './model';
-import { ProfileRepository } from './repository';
+import { type Profile } from './model';
+import { type ProfileRepository } from './repository';
 
 interface ProfileContext {
   readonly profile: Accessor<Profile>;
   reloadProfile(): Promise<void>;
-  updateProfile(input: ProfileUpdateInput): Promise<void>;
 }
 
 const ProfileContext = createContext<ProfileContext>();
 
-export const ProfileProvider: ParentComponent = (props) => {
+interface ProfileProviderProps {
+  readonly repository: ProfileRepository;
+}
+
+export const ProfileProvider: ParentComponent<ProfileProviderProps> = (props) => {
   const auth = useAuth();
   const userId = auth.user().id;
   const [profile, setProfile] = createSignal<Profile | null>(null);
-  const [, setError] = createSignal<string | null>(null);
+  const [error, setError] = createSignal<Error | null>(null);
 
-  const loadProfile = () =>
-    run(
-      ProfileRepository.getProfile(userId).pipe(
-        Effect.tap((nextProfile) =>
-          Effect.sync(() => {
-            setProfile(nextProfile);
-            setError(null);
-          })
-        ),
-        Effect.catchAll((e) =>
-          Effect.sync(() => {
-            setProfile(null);
-            setError(e.message);
-          })
-        ),
-        Effect.asVoid
-      )
-    );
+  const loadProfile = async (): Promise<void> => {
+    setError(null);
+
+    try {
+      setProfile(await props.repository.getProfile(userId));
+    } catch (error) {
+      setProfile(null);
+      setError(
+        error instanceof Error ? error : new Error('Unable to load profile')
+      );
+    }
+  };
 
   const reloadProfile = () => loadProfile();
-
-  const updateProfile = (input: ProfileUpdateInput) =>
-    run(
-      ProfileRepository.updateProfile(userId, input).pipe(
-        Effect.tap((nextProfile) =>
-          Effect.sync(() => {
-            setProfile(nextProfile);
-            setError(null);
-          })
-        ),
-        Effect.asVoid
-      )
-    );
 
   onMount(() => {
     void loadProfile();
@@ -70,13 +52,17 @@ export const ProfileProvider: ParentComponent = (props) => {
 
   return (
     <Switch>
+      <Match when={error()}>
+        {(profileError) => <p role='alert'>{profileError().message}</p>}
+      </Match>
+
       <Match when={profile() === null}>
         <LoadingScreen />
       </Match>
 
       <Match when={profile()}>
         {(p) => (
-          <ProfileContext.Provider value={{ profile: p, reloadProfile, updateProfile }}>
+          <ProfileContext.Provider value={{ profile: p, reloadProfile }}>
             {props.children}
           </ProfileContext.Provider>
         )}

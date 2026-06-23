@@ -1,26 +1,24 @@
 import { type User as SupabaseUser } from '@supabase/supabase-js';
-import { Schema } from 'effect';
-
-import { decodeMapTo, NullableString } from '@/shared/schema';
-import { AuthError } from './error';
+import { z } from 'zod';
 
 export type AuthUserSource = Pick<SupabaseUser, 'id' | 'email'>;
 
-export type AuthUser = Schema.Schema.Type<typeof AuthUserSchema>;
+export const AuthUserSourceSchema = z.object({
+  id: z.string(),
+  email: z.string().optional(),
+}) satisfies z.ZodType<AuthUserSource>;
 
-export const AuthUserSourceSchema = Schema.Struct({
-  id: Schema.String,
-  email: Schema.optional(Schema.String),
-}) satisfies Schema.Schema<AuthUserSource>;
-
-export const AuthUserSchema = Schema.Struct({
-  id: Schema.String,
-  email: NullableString,
+export const AuthUserSchema = z.object({
+  id: z.string(),
+  email: z.string().nullable(),
 });
 
-export const decodeAuthUser = decodeMapTo(AuthUserSchema)(
-  AuthUserSourceSchema,
-  (input) => ({ id: input.id, email: input.email ?? null }),
-  AuthError.fromParse
-);
+export type AuthUser = z.infer<typeof AuthUserSchema>;
 
+export const AuthUserFromSourceSchema = AuthUserSourceSchema.transform(
+  (user) =>
+    ({
+      id: user.id,
+      email: user.email ?? null,
+    }) satisfies AuthUser
+);

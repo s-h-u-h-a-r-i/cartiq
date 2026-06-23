@@ -1,57 +1,48 @@
 import type { PostgrestMaybeSingleResponse } from '@supabase/supabase-js';
-import { Effect } from 'effect';
 
-import { Supabase } from '@/supabase';
+import { type AppSupabaseClient } from '@/supabase';
 import { ProfileError } from './error';
 import {
-  decodeProfile,
-  encodeProfileUpdateInput,
-  ProfileRow,
-  ProfileUpdateInput,
+  ProfileFromRowSchema,
+  type Profile,
+  type ProfileRow,
 } from './model';
 
-export class ProfileRepository extends Effect.Service<ProfileRepository>()(
-  'cartiq/ProfileRepository',
-  {
-    accessors: true,
-    dependencies: [Supabase.Default],
-    effect: Effect.gen(function* () {
-      const supabase = yield* Supabase;
+export class ProfileRepository {
+  constructor(private readonly supabase: AppSupabaseClient) {}
 
-      return {
-        getProfile: (userId: string) =>
-          readProfileResponse(() =>
-            supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
-          ).pipe(Effect.flatMap(decodeProfile)),
+  async getProfile(userId: string): Promise<Profile> {
+    const row = await this.readProfileResponse(() =>
+      this.supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
+    );
+    const result = ProfileFromRowSchema.safeParse(row);
 
-        updateProfile: (userId: string, input: ProfileUpdateInput) =>
-          encodeProfileUpdateInput(input).pipe(
-            Effect.flatMap((profileUpdate) =>
-              readProfileResponse(() =>
-                supabase
-                  .from('profiles')
-                  .update(profileUpdate)
-                  .eq('id', userId)
-                  .select()
-                  .maybeSingle()
-              )
-            ),
-            Effect.flatMap(decodeProfile)
-          ),
-      };
-    }),
+    if (!result.success) {
+      throw ProfileError.fromZod(result.error);
+    }
+
+    return result.data;
   }
-) {}
 
-const readProfileResponse = (
-  request: () => PromiseLike<PostgrestMaybeSingleResponse<ProfileRow>>
-) =>
-  Effect.tryPromise({ try: request, catch: ProfileError.fromUnknown }).pipe(
-    Effect.filterOrFail(
-      (response) => response.success === true,
-      ({ error }) => ProfileError.fromPostgrest(error)
-    ),
-    Effect.filterOrFail((response) => response.data !== null, ProfileError.notFound),
-    Effect.map(({ data }) => data!)
-  );
+  private async readProfileResponse(
+    request: () => PromiseLike<PostgrestMaybeSingleResponse<ProfileRow>>
+  ): Promise<ProfileRow> {
+    let response: PostgrestMaybeSingleResponse<ProfileRow>;
 
+    try {
+      response = await request();
+    } catch (error) {
+      throw ProfileError.fromUnknown(error);
+    }
+
+    if (!response.success) {
+      throw ProfileError.fromPostgrest(response.error);
+    }
+
+    if (response.data === null) {
+      throw ProfileError.notFound();
+    }
+
+    return response.data;
+  }
+}

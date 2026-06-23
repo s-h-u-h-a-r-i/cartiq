@@ -2,12 +2,16 @@
 
 ## Architecture
 
-- Model application dependencies as Effect services when there is a real dependency boundary.
-- Define service requirements with `Context.Tag`.
-- Provide service implementations with `Layer`.
-- Select application dependencies at the application boundary, not inside UI components.
-- UI code should run effects through the shared runtime boundary.
-- Avoid wrapper functions that only delegate to another service unless they add real use-case logic.
+- Model real external or persistence boundaries as concrete classes with narrow public APIs.
+- Pass external dependencies into those classes through their constructors.
+- Construct the class instances in `src/index.tsx`, the application entrypoint.
+- Pass each class instance directly into `App`, then into its owning provider.
+- Pass application dependencies into UI providers through explicit props.
+- Expose domain state and commands to descendants through domain hooks such as `useAuth()` and `useProfile()`.
+- Do not expose a global dependency hook that allows UI components to access repositories directly.
+- Keep Supabase response handling and Zod parsing outside UI components.
+- Keep domain mappings beside their schemas in the owning module.
+- Do not add wrappers around pure functions or short domain mappings.
 
 ## Local Data
 
@@ -22,10 +26,6 @@ Follow this outline as the project grows. Do not create folders before they are 
 
 ```txt
 src/
-  app/
-    app-layer.ts
-    effect-runtime.ts
-
   <domain-module>/
     service.ts
     model.ts
